@@ -2,9 +2,12 @@ import { connect } from "@planetscale/database";
 import { drizzle } from "drizzle-orm/planetscale-serverless";
 
 import * as auth from "./schema/auth";
-import * as post from "./schema/post";
+import * as plant from "./schema/plant";
+import * as sensor from "./schema/sensor";
+import * as shop from "./schema/shop";
+import * as yard from "./schema/yard";
 
-export const schema = { ...auth, ...post };
+export const schema = { ...auth, ...plant, ...sensor, ...shop, ...yard };
 
 export { mySqlTable as tableCreator } from "./schema/_table";
 

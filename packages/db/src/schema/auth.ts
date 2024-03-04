@@ -2,6 +2,7 @@ import { relations, sql } from "drizzle-orm";
 import {
   index,
   int,
+  mysqlEnum,
   primaryKey,
   text,
   timestamp,
@@ -9,6 +10,8 @@ import {
 } from "drizzle-orm/mysql-core";
 
 import { mySqlTable } from "./_table";
+import { plantToUser } from "./plant";
+import { yardToUser } from "./yard";
 
 export const users = mySqlTable("user", {
   id: varchar("id", { length: 255 }).notNull().primaryKey(),
@@ -19,10 +22,13 @@ export const users = mySqlTable("user", {
     fsp: 3,
   }).default(sql`CURRENT_TIMESTAMP(3)`),
   image: varchar("image", { length: 255 }),
+  role: mysqlEnum("role", ["admin", ""]).default(""),
 });
 
 export const usersRelations = relations(users, ({ many }) => ({
   accounts: many(accounts),
+  plants: many(plantToUser),
+  yards: many(yardToUser),
 }));
 
 export const accounts = mySqlTable(
