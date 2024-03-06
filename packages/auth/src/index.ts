@@ -83,24 +83,6 @@ export const {
 
       return true;
     },
-    signIn: async ({ user }) => {
-      if (!user.email) {
-        return false;
-      }
-
-      const userData = await db.query.users.findFirst({
-        where: eq(users.email, user.email),
-        columns: {
-          id: true,
-        },
-      });
-
-      if (!userData) {
-        return false;
-      }
-
-      return true;
-    },
     session: (opts) => {
       if (!("user" in opts)) throw "unreachable with session strategy";
 
