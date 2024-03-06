@@ -3,7 +3,7 @@ import { Button } from "@acme/ui/button";
 
 export function Sidebar() {
   return (
-    <div className="hidden border-r lg:block bg-gray-100/40 dark:bg-gray-800/40">
+    <aside className="border-r lg:block bg-gray-100/40 dark:bg-gray-800/40">
       <div className="flex flex-col gap-2 h-screen">
         <div className="flex items-center px-6 border-b h-[60px]">
           <Link
@@ -19,7 +19,7 @@ export function Sidebar() {
           </Button>
         </div>
         <div className="overflow-auto flex-1 py-2">
-          <nav className="grid items-start px-4 text-sm font-medium">
+          <div className="grid items-start px-4 text-sm font-medium">
             <Link
               className="flex gap-3 items-center py-2 px-3 text-gray-900 bg-gray-100 rounded-lg transition-all dark:text-gray-50 dark:bg-gray-800 hover:text-gray-900 dark:hover:text-gray-50"
               href="/dashboard"
@@ -30,7 +30,7 @@ export function Sidebar() {
             <div className="text-gray-500 dark:text-gray-400">Modules</div>
             <Link
               className="flex gap-3 items-center py-2 px-3 text-gray-500 rounded-lg transition-all dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-50"
-              href="/dashboard/dashboard/users"
+              href="/dashboard/users"
             >
               <UsersIcon className="w-4 h-4" />
               Utilisateurs
@@ -41,13 +41,6 @@ export function Sidebar() {
             >
               <PackageIcon className="w-4 h-4" />
               Ventes
-            </Link>
-            <Link
-              className="flex gap-3 items-center py-2 px-3 text-gray-500 rounded-lg transition-all dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-50"
-              href="/dashboard/purchases"
-            >
-              <TruckIcon className="w-4 h-4" />
-              Achats
             </Link>
             <Link
               className="flex gap-3 items-center py-2 px-3 text-gray-500 rounded-lg transition-all dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-50"
@@ -62,6 +55,21 @@ export function Sidebar() {
             >
               <CalendarIcon className="w-4 h-4" />
               HR
+            </Link>
+            <div className="text-gray-500 dark:text-gray-400">Magasin</div>
+            <Link
+              className="flex gap-3 items-center py-2 px-3 text-gray-500 rounded-lg transition-all dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-50"
+              href="/dashboard/sales"
+            >
+              <TruckIcon className="w-4 h-4" />
+              Achats
+            </Link>
+            <Link
+              className="flex gap-3 items-center py-2 px-3 text-gray-500 rounded-lg transition-all dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-50"
+              href="/dashboard/sales/articles"
+            >
+              <TruckIcon className="w-4 h-4" />
+              Articles
             </Link>
             <div className="text-gray-500 dark:text-gray-400">Tools</div>
             <Link
@@ -78,10 +86,10 @@ export function Sidebar() {
               <SettingsIcon className="w-4 h-4" />
               Paramètres
             </Link>
-          </nav>
+          </div>
         </div>
       </div>
-    </div>
+    </aside>
   );
 }
 

@@ -3,44 +3,32 @@
 import { Label } from "@acme/ui/label";
 import { Input } from "@acme/ui/input";
 import { Button } from "@acme/ui/button";
-import { useState } from "react";
 import { googleAuth, sendVerificationRequest } from "./action";
-import { z } from "zod";
-
-const Email = z.string().email();
+import { useFormState } from "react-dom";
 
 export default function SignInForm() {
-  const [email, setEmail] = useState<string>("");
-  const [error, setError] = useState<string | null>(null);
+  const [state, formAction] = useFormState(sendVerificationRequest, {
+    message: "",
+  });
 
   return (
-    <form className="space-y-4">
+    <form action={formAction} className="space-y-4">
       <div className="space-y-4">
         <div>
           <Label htmlFor="email">Email</Label>
           <Input
             id="email"
+            name="email"
             placeholder="m@example.com"
             type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
           />
 
-          {error}
+          {state?.message}
         </div>
 
         <Button
           type="submit"
           className="w-full"
-          formAction={async () => {
-            const result = Email.safeParse(email);
-
-            if (!result.success) {
-              setError(result.error.message);
-            }
-
-            await sendVerificationRequest({ email });
-          }}
         >
           Send verification email
         </Button>

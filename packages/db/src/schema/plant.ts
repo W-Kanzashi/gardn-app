@@ -16,6 +16,7 @@ export const plant = mySqlTable("plant", {
   title: varchar("name", { length: 256 }).notNull(),
   description: varchar("description", { length: 256 }).notNull(),
   image_url: varchar("image_url", { length: 256 }).notNull(),
+  deleted: boolean("deleted").default(false),
   createdAt: timestamp("created_at")
     .default(sql`CURRENT_TIMESTAMP`)
     .notNull(),

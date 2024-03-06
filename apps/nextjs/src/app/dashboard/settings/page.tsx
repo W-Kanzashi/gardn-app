@@ -1,19 +1,15 @@
-/**
- * v0 by Vercel.
- * @see https://v0.dev/t/KCz2rkzRgqx
- * Documentation: https://v0.dev/docs#integrating-generated-code-into-your-nextjs-app
- */
-import Link from "next/link";
+import { auth, signOut } from "@acme/auth";
 import { Button } from "@acme/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@acme/ui/card";
+import { Card, CardDescription, CardHeader, CardTitle } from "@acme/ui/card";
+import { redirect } from "next/navigation";
 
-export default function Component() {
+export default async function Component() {
+  const session = await auth();
+
+  if (!session) {
+    redirect("/auth/signin");
+  }
+
   return (
     <div className="flex flex-col">
       <main className="flex flex-col flex-1 gap-4 p-4 md:gap-8 md:p-6">
@@ -38,78 +34,26 @@ export default function Component() {
               <CardTitle>Purchases</CardTitle>
               <CardDescription>Monthly purchases</CardDescription>
             </CardHeader>
-            
           </Card>
           <Card>
             <CardHeader>
               <CardTitle>Tasks</CardTitle>
               <CardDescription>Open tasks</CardDescription>
             </CardHeader>
-            
           </Card>
+          <form>
+            <Button
+              formAction={async () => {
+                "use server";
+
+                await signOut();
+              }}
+            >
+              Déconnexion
+            </Button>
+          </form>
         </div>
       </main>
     </div>
-  );
-}
-
-function SearchIcon(props) {
-  return (
-    <svg
-      {...props}
-      xmlns="http://www.w3.org/2000/svg"
-      width="24"
-      height="24"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <circle cx="11" cy="11" r="8" />
-      <path d="m21 21-4.3-4.3" />
-    </svg>
-  );
-}
-
-function ArrowRightIcon(props) {
-  return (
-    <svg
-      {...props}
-      xmlns="http://www.w3.org/2000/svg"
-      width="24"
-      height="24"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <path d="M5 12h14" />
-      <path d="m12 5 7 7-7 7" />
-    </svg>
-  );
-}
-
-function Package2Icon(props) {
-  return (
-    <svg
-      {...props}
-      xmlns="http://www.w3.org/2000/svg"
-      width="24"
-      height="24"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <path d="M3 9h18v10a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V9Z" />
-      <path d="m3 9 2.45-4.9A2 2 0 0 1 7.24 3h9.52a2 2 0 0 1 1.8 1.1L21 9" />
-      <path d="M12 3v6" />
-    </svg>
   );
 }

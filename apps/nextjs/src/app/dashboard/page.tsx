@@ -1,8 +1,3 @@
-/**
- * v0 by Vercel.
- * @see https://v0.dev/t/KCz2rkzRgqx
- * Documentation: https://v0.dev/docs#integrating-generated-code-into-your-nextjs-app
- */
 import Link from "next/link";
 import { Button } from "@acme/ui/button";
 import { Input } from "@acme/ui/input";
@@ -22,8 +17,16 @@ import {
   CardTitle,
 } from "@acme/ui/card";
 import Image from "next/image";
+import { auth } from "@acme/auth";
+import { redirect } from "next/navigation";
 
 export default async function Component() {
+  const session = await auth();
+
+  if (!session) {
+    redirect("/auth/signin");
+  }
+
   return (
     <div className="flex flex-col">
       <header className="flex gap-4 items-center px-6 h-14 border-b bg-gray-100/40 lg:h-[60px] dark:bg-gray-800/40">

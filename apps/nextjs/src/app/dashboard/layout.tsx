@@ -1,5 +1,5 @@
 import { ThemeProvider, ThemeToggle } from "@acme/ui/theme";
-import { Toaster } from "@acme/ui/toast";
+import { Toaster } from "@acme/ui/sonner";
 
 import { TRPCReactProvider } from "@/trpc/react";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
@@ -9,7 +9,7 @@ export default function RootLayout(props: { children: React.ReactNode }) {
   return (
     <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
       <TRPCReactProvider>
-        <div className="grid w-full min-h-screen lg:grid-cols-[280px_1fr]">
+        <div className="grid w-full min-h-screen lg:grid-cols-[220px_1fr]">
           <Sidebar />
           {props.children}
           <ReactQueryDevtools initialIsOpen={false} buttonPosition="bottom-left" />

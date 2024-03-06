@@ -63,8 +63,13 @@ export const article = mySqlTable("article", {
   id: varchar("id", { length: 30 }).primaryKey().$defaultFn(() => createId()),
   title: varchar("name", { length: 100 }).notNull(),
   description: varchar("description", { length: 256 }).notNull(),
+  price: smallint("price", { unsigned: true }).notNull(),
+  sub_articles: json("sub_articles").$type<{
+    id: string;
+    name: string;
+    price: number;
+  }[]>(),
   image_url: varchar("image_url", { length: 256 }).notNull(),
-  image_public_id: varchar("image_public_id", { length: 256 }).notNull(),
   createdAt: timestamp("created_at")
     .default(sql`CURRENT_TIMESTAMP`)
     .notNull(),
