@@ -3,11 +3,10 @@ import { DrizzleAdapter } from "@auth/drizzle-adapter";
 import GoogleProvider from "@auth/core/providers/google";
 import NextAuth from "next-auth";
 
-import { db, eq, tableCreator } from "@acme/db";
+import { db, tableCreator } from "@acme/db";
 import { env } from "../env";
 import EmailProvider from "next-auth/providers/resend";
 // import { Resend } from "resend";
-import { users } from "../../db/src/schema/auth";
 
 export type { Session } from "next-auth";
 
