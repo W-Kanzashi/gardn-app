@@ -1,3 +1,5 @@
+import Image from "next/image";
+import Link from "next/link";
 import {
   ChevronDownIcon,
   ChevronRightIcon,
@@ -5,21 +7,28 @@ import {
   LinkedInLogoIcon,
   TwitterLogoIcon,
 } from "@radix-ui/react-icons";
-import Image from "next/image";
-import Link from "next/link";
 
 export default function Page() {
   return (
     <main className="space-y-10">
       <section className="h-[90vh]">
-        <div className="py-20 px-4 space-y-8 max-w-3xl lg:px-10">
+        <div className="max-w-3xl space-y-8 px-4 py-20 lg:px-10">
+          <div className="absolute inset-0 -z-50">
+            <Image
+              src="/home.png"
+              alt="Gard'n champ"
+              width={1920}
+              height={1080}
+              className="aspect-auto h-full w-full object-cover"
+            />
+          </div>
           <div className="relative mb-10 max-w-[10rem]">
             <Image
               src="/logo.png"
               alt="Gard'n"
               width={100}
               height={100}
-              className="w-full h-full object-fit aspect-auto"
+              className="object-fit aspect-auto h-full w-full"
             />
           </div>
           <h1 className="text-3xl font-bold uppercase lg:text-5xl">
@@ -50,22 +59,20 @@ export default function Page() {
 
           <Link
             href="#"
-            className="flex flex-row gap-4 items-center py-1 px-4 max-w-max text-lg font-bold text-white rounded-full bg-primary"
+            className="flex max-w-max flex-row items-center gap-4 rounded-full bg-primary px-4 py-1 text-lg font-bold text-white"
           >
-            <span>
-              Je découvre l&apos;application
-            </span>{" "}
+            <span>Je découvre l&apos;application</span>{" "}
             <ChevronRightIcon height={30} width={30} />
           </Link>
         </div>
       </section>
 
-      <div className="flex justify-center items-center mx-auto w-10 h-10 rounded-full border">
+      <div className="mx-auto flex h-10 w-10 items-center justify-center rounded-full border bg-white">
         <ChevronDownIcon height={30} width={30} />
       </div>
 
-      <section className="container px-4 pb-10 mx-auto space-y-10">
-        <h2 className="text-3xl font-bold text-center uppercase">
+      <section className="container mx-auto space-y-10 px-4 py-10">
+        <h2 className="text-center text-3xl font-bold uppercase">
           Pourquoi nous choisir ?
         </h2>
 
@@ -74,7 +81,7 @@ export default function Page() {
             <h3 className="text-xl font-semibold">
               Simplicite d&apos;utilisation
             </h3>
-            <p className="mx-auto max-w-xs text-secondary text-balance">
+            <p className="mx-auto max-w-xs text-balance text-secondary">
               Êtes-vous fatigué de voir vos plantes dépérir malgré tous vos
               efforts ? Ne vous inquiétez plus, Gard&apos;n est votre allié vert
               pour un jardinage facile et réussi !
@@ -82,10 +89,8 @@ export default function Page() {
           </div>
 
           <div className="space-y-5">
-            <h3 className="text-xl font-semibold">
-              Personnalisez votre sol
-            </h3>
-            <p className="mx-auto max-w-xs text-secondary text-balance">
+            <h3 className="text-xl font-semibold">Personnalisez votre sol</h3>
+            <p className="mx-auto max-w-xs text-balance text-secondary">
               Ne perdez plus de temps à deviner quelles plantes conviennent à
               votre terrain. GreenPot analyse la composition de votre sol pour
               vous recommander les meilleures options.
@@ -96,7 +101,7 @@ export default function Page() {
             <h3 className="text-xl font-semibold">
               Economisez temps et energie
             </h3>{" "}
-            <p className="mx-auto max-w-xs text-secondary text-balance">
+            <p className="mx-auto max-w-xs text-balance text-secondary">
               Fini les essais infructueux ! GreenPot vous assure des résultats
               satisfaisants, vous permettant de créer un jardin luxuriant sans
               tracas.
@@ -105,18 +110,18 @@ export default function Page() {
         </div>
       </section>
 
-      <footer className="flex justify-between items-center py-6 px-8 shadow-[0_-10px_15px_-3px_rgb(0_0_0/0.1),0_-4px_6px_-4px_rgb(0_0_0/0.1)]">
+      <footer className="flex items-center justify-between px-8 py-6 shadow-[0_-10px_15px_-3px_rgb(0_0_0/0.1),0_-4px_6px_-4px_rgb(0_0_0/0.1)]">
         <div className="relative">
           <Image
             src="/logo.png"
             alt="Gard'n"
             width={100}
             height={100}
-            className="w-full h-full object-fit aspect-auto"
+            className="object-fit aspect-auto h-full w-full"
           />
         </div>
 
-        <div className="flex gap-4 items-center">
+        <div className="flex items-center gap-4">
           <TwitterLogoIcon height={30} width={30} />
           <InstagramLogoIcon height={30} width={30} />
           <LinkedInLogoIcon height={30} width={30} />
