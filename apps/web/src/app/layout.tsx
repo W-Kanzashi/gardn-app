@@ -1,25 +1,24 @@
 import type { Metadata, Viewport } from "next";
+import { env } from "@/env";
 import { GeistMono } from "geist/font/mono";
 import { GeistSans } from "geist/font/sans";
 
 import { cn } from "@acme/ui";
-
-import { env } from "@/env";
 
 import "@/app/globals.css";
 
 export const metadata: Metadata = {
   metadataBase: new URL(
     env.VERCEL_ENV === "production"
-      ? "https://gardn.fr"
+      ? "https://g-ardn.com"
       : "http://localhost:3000",
   ),
   title: "Gardn",
   description: "Site de présentation de Gardn",
   openGraph: {
-    title: "Create T3 Turbo",
+    title: "Gardn",
     description: "Site de présentation de Gardn",
-    url: "https://gardn-website.vercel.app",
+    url: "https://g-ardn.com",
     siteName: "Gardn",
   },
 };
