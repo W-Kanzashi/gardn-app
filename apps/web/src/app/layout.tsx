@@ -35,7 +35,7 @@ export default function RootLayout(props: { children: React.ReactNode }) {
     <html lang="fr">
       <body
         className={cn(
-          "min-h-screen bg-background font-sans text-foreground antialiased",
+          "min-h-screen font-sans antialiased",
           GeistSans.variable,
           GeistMono.variable,
         )}
