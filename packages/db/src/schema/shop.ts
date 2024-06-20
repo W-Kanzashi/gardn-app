@@ -1,27 +1,21 @@
 import { relations, sql } from "drizzle-orm";
-import {
-  boolean,
-  json,
-  primaryKey,
-  smallint,
-  timestamp,
-  varchar,
-} from "drizzle-orm/mysql-core";
+import { blob, integer, primaryKey, text } from "drizzle-orm/sqlite-core";
 
-import { createId } from "@paralleldrive/cuid2";
-
+import { nanoid } from "../nanoid";
 import { mySqlTable } from "./_table";
 
 export const order = mySqlTable("order", {
-  id: varchar("id", { length: 30 }).primaryKey().$defaultFn(() => createId()),
-  title: varchar("name", { length: 100 }).notNull(),
-  more_information: varchar("description", { length: 256 }).notNull(),
-  price: smallint("price").notNull(),
-  canceled: boolean("canceled").default(false),
-  createdAt: timestamp("created_at")
-    .default(sql`CURRENT_TIMESTAMP`)
+  id: text("id", { length: 21 })
+    .primaryKey()
+    .$defaultFn(() => nanoid()),
+  title: text("name", { length: 100 }).notNull(),
+  more_information: text("description", { length: 256 }).notNull(),
+  price: integer("price").notNull(),
+  canceled: integer("canceled", { mode: "boolean" }).default(false),
+  createdAt: text("created_at")
+    .default(sql`CURRENT_text`)
     .notNull(),
-  updatedAt: timestamp("updatedAt").onUpdateNow(),
+  updatedAt: text("updatedAt"),
 });
 
 export const orderRelations = relations(order, ({ many }) => ({
@@ -29,23 +23,31 @@ export const orderRelations = relations(order, ({ many }) => ({
   articles: many(orderToarticle),
 }));
 
-export const orderToUser = mySqlTable("order_to_user", {
-  order_id: varchar("order_id", { length: 30 }).notNull(),
-  user_id: varchar("user_id", { length: 30 }).notNull(),
-  favorite: boolean("favorite").default(false),
-}, (table) => ({
-  pk: primaryKey({ columns: [table.order_id, table.user_id] }),
-}));
-
-export const orderToarticle = mySqlTable("order_to_article", {
-  order_id: varchar("order_id", { length: 30 }).notNull(),
-  article_id: varchar("article_id", { length: 30 }).notNull(),
-  quantity: smallint("quantity").notNull(),
-}, (table) => ({
-  pk: primaryKey({
-    columns: [table.order_id, table.article_id],
+export const orderToUser = mySqlTable(
+  "order_to_user",
+  {
+    order_id: text("order_id", { length: 21 }).notNull(),
+    user_id: text("user_id").notNull(),
+    favorite: integer("favorite", { mode: "boolean" }).default(false),
+  },
+  (table) => ({
+    pk: primaryKey({ columns: [table.order_id, table.user_id] }),
   }),
-}));
+);
+
+export const orderToarticle = mySqlTable(
+  "order_to_article",
+  {
+    order_id: text("order_id", { length: 21 }).notNull(),
+    article_id: text("article_id", { length: 21 }).notNull(),
+    quantity: integer("quantity").notNull(),
+  },
+  (table) => ({
+    pk: primaryKey({
+      columns: [table.order_id, table.article_id],
+    }),
+  }),
+);
 
 export const orderToarticleRelations = relations(orderToarticle, ({ one }) => ({
   order: one(order, {
@@ -60,20 +62,24 @@ export const orderToarticleRelations = relations(orderToarticle, ({ one }) => ({
 
 // Articles
 export const article = mySqlTable("article", {
-  id: varchar("id", { length: 30 }).primaryKey().$defaultFn(() => createId()),
-  title: varchar("name", { length: 100 }).notNull(),
-  description: varchar("description", { length: 256 }).notNull(),
-  price: smallint("price", { unsigned: true }).notNull(),
-  sub_articles: json("sub_articles").$type<{
-    id: string;
-    name: string;
-    price: number;
-  }[]>(),
-  image_url: varchar("image_url", { length: 256 }).notNull(),
-  createdAt: timestamp("created_at")
-    .default(sql`CURRENT_TIMESTAMP`)
+  id: text("id", { length: 21 })
+    .primaryKey()
+    .$defaultFn(() => nanoid()),
+  title: text("name", { length: 100 }).notNull(),
+  description: text("description", { length: 256 }).notNull(),
+  price: integer("price").notNull(),
+  sub_articles: blob("sub_articles").$type<
+    {
+      id: string;
+      name: string;
+      price: number;
+    }[]
+  >(),
+  image_url: text("image_url", { length: 256 }).notNull(),
+  createdAt: text("created_at")
+    .default(sql`CURRENT_text`)
     .notNull(),
-  updatedAt: timestamp("updatedAt").onUpdateNow(),
+  updatedAt: text("updatedAt"),
 });
 
 export const articleRelations = relations(article, ({ many }) => ({
@@ -81,23 +87,29 @@ export const articleRelations = relations(article, ({ many }) => ({
   shops: many(articleToShop),
 }));
 
-export const articleToShop = mySqlTable("article_to_shop", {
-  article_id: varchar("articleId", { length: 30 }).notNull(),
-  shop_id: varchar("shopId", { length: 30 }).notNull(),
-}, (table) => ({
-  pk: primaryKey({
-    columns: [table.article_id, table.shop_id],
+export const articleToShop = mySqlTable(
+  "article_to_shop",
+  {
+    article_id: text("articleId", { length: 21 }).notNull(),
+    shop_id: text("shopId", { length: 21 }).notNull(),
+  },
+  (table) => ({
+    pk: primaryKey({
+      columns: [table.article_id, table.shop_id],
+    }),
   }),
-}));
+);
 
 export const shop = mySqlTable("shop", {
-  id: varchar("id", { length: 30 }).primaryKey().$defaultFn(() => createId()),
-  title: varchar("name", { length: 100 }).notNull(),
-  description: varchar("description", { length: 256 }).notNull(),
-  createdAt: timestamp("created_at")
-    .default(sql`CURRENT_TIMESTAMP`)
+  id: text("id", { length: 21 })
+    .primaryKey()
+    .$defaultFn(() => nanoid()),
+  title: text("name", { length: 100 }).notNull(),
+  description: text("description", { length: 256 }).notNull(),
+  createdAt: text("created_at")
+    .default(sql`CURRENT_text`)
     .notNull(),
-  updatedAt: timestamp("updatedAt").onUpdateNow(),
+  updatedAt: text("updatedAt"),
 });
 
 export const shopRelations = relations(shop, ({ many }) => ({
@@ -106,29 +118,40 @@ export const shopRelations = relations(shop, ({ many }) => ({
 
 // Support for shop
 export const support = mySqlTable("support", {
-  id: varchar("id", { length: 30 }).primaryKey().$defaultFn(() => createId()),
-  title: varchar("name", { length: 100 }).notNull(),
-  ticket_id: varchar("ticket_id", { length: 30 }).notNull(),
-  chat: json("chat").$type<
-    Record<string, {
-      message: string;
-      createdAt: string;
-    }>
-  >().notNull(),
-  createdAt: timestamp("created_at")
-    .default(sql`CURRENT_TIMESTAMP`)
+  id: text("id", { length: 21 })
+    .primaryKey()
+    .$defaultFn(() => nanoid()),
+  title: text("name", { length: 100 }).notNull(),
+  ticket_id: text("ticket_id", { length: 21 }).notNull(),
+  chat: blob("chat")
+    .$type<
+      Record<
+        string,
+        {
+          message: string;
+          createdAt: string;
+        }
+      >
+    >()
     .notNull(),
-  updatedAt: timestamp("updatedAt").onUpdateNow(),
+  createdAt: text("created_at")
+    .default(sql`CURRENT_text`)
+    .notNull(),
+  updatedAt: text("updatedAt"),
 });
 
-export const supportToUser = mySqlTable("support_to_user", {
-  support_id: varchar("support_id", { length: 30 }).notNull(),
-  user_id: varchar("user_id", { length: 30 }).notNull(),
-}, (table) => ({
-  pk: primaryKey({
-    columns: [table.support_id, table.user_id],
+export const supportToUser = mySqlTable(
+  "support_to_user",
+  {
+    support_id: text("support_id", { length: 21 }).notNull(),
+    user_id: text("user_id").notNull(),
+  },
+  (table) => ({
+    pk: primaryKey({
+      columns: [table.support_id, table.user_id],
+    }),
   }),
-}));
+);
 
 export const supportRelations = relations(support, ({ many }) => ({
   users: many(supportToUser),

@@ -1,7 +1,8 @@
 "use server";
 
-import { signIn } from "@acme/auth";
 import { z } from "zod";
+
+import { signIn } from "@acme/auth";
 
 const Email = z.string().email();
 
@@ -27,8 +28,4 @@ export async function sendVerificationRequest(
       message: "no-user",
     };
   }
-}
-
-export async function googleAuth() {
-  await signIn("google");
 }

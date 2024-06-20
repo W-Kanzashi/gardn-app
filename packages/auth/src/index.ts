@@ -1,12 +1,12 @@
 import type { DefaultSession } from "next-auth";
 import { DrizzleAdapter } from "@auth/drizzle-adapter";
-import GoogleProvider from "@auth/core/providers/google";
 import NextAuth from "next-auth";
+import ResendProvider from "next-auth/providers/resend";
+import { Resend } from "resend";
 
 import { db, tableCreator } from "@acme/db";
+
 import { env } from "../env";
-import EmailProvider from "next-auth/providers/resend";
-// import { Resend } from "resend";
 
 export type { Session } from "next-auth";
 
@@ -34,8 +34,7 @@ export const {
   debug: process.env.NODE_ENV === "development",
   adapter: DrizzleAdapter(db, tableCreator),
   providers: [
-    GoogleProvider,
-    EmailProvider({
+    ResendProvider({
       server: {
         host: env.EMAIL_SERVER_HOST,
         port: env.EMAIL_SERVER_PORT,
@@ -46,30 +45,38 @@ export const {
       },
       apiKey: env.EMAIL_SERVER_PASSWORD,
       from: env.EMAIL_FROM,
-      // sendVerificationRequest: async ({ identifier: email, url }) => {
-      //   try {
-      //     const resend = new Resend(env.EMAIL_SERVER_PASSWORD);
-      //
-      //     await resend.emails.send({
-      //       from: env.EMAIL_FROM,
-      //       to: email,
-      //       subject: "Your StreakUp Login Link",
-      //       html: '<html><body>\
-      //         <h2>Your Login Link</h2>\
-      //         <p>Welcome to StreakUp!</p>\
-      //         <p>Please click the magic link below to sign in to your account.</p>\
-      //         <p><a href="' + url + '"><b>Sign in</b></a></p>\
-      //         <p>or copy and paste this URL into your browser:</p>\
-      //         <p><a href="' + url + '">' + url + "</a></p>\
-      //         <br /><br /><hr />\
-      //         <p><i>This email was intended for " + email +
-      //         ". If you were not expecting this email, you can ignore this email.</i></p>\
-      //         </body></html>",
-      //     });
-      //   } catch (error) {
-      //     console.log("sendVerificationRequest", { error });
-      //   }
-      // },
+      sendVerificationRequest: async ({ identifier: email, url }) => {
+        try {
+          const resend = new Resend(env.EMAIL_SERVER_PASSWORD);
+
+          await resend.emails.send({
+            from: env.EMAIL_FROM,
+            to: email,
+            subject: "Your StreakUp Login Link",
+            html:
+              '<html><body>\
+              <h2>Your Login Link</h2>\
+              <p>Welcome to StreakUp!</p>\
+              <p>Please click the magic link below to sign in to your account.</p>\
+              <p><a href="' +
+              url +
+              '"><b>Sign in</b></a></p>\
+              <p>or copy and paste this URL into your browser:</p>\
+              <p><a href="' +
+              url +
+              '">' +
+              url +
+              "</a></p>\
+              <br /><br /><hr />\
+              <p><i>This email was intended for " +
+              email +
+              ". If you were not expecting this email, you can ignore this email.</i></p>\
+              </body></html>",
+          });
+        } catch (error) {
+          console.log("sendVerificationRequest", { error });
+        }
+      },
     }),
   ],
   callbacks: {

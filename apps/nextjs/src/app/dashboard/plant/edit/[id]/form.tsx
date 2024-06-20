@@ -1,12 +1,10 @@
 "use client";
 
-import { useRouter } from "next/navigation";
 import { api } from "@/trpc/react";
 import { UploadButton } from "@/utils/uploadthing";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Check, ChevronsUpDown } from "lucide-react";
 import { useForm } from "react-hook-form";
-import { toast } from "sonner";
 import { z } from "zod";
 
 import { cn } from "@acme/ui";
@@ -14,7 +12,6 @@ import { Button } from "@acme/ui/button";
 import {
   Card,
   CardContent,
-  CardDescription,
   CardFooter,
   CardHeader,
   CardTitle,
@@ -40,7 +37,8 @@ import { Input } from "@acme/ui/input";
 import { Popover, PopoverContent, PopoverTrigger } from "@acme/ui/popover";
 import { Textarea } from "@acme/ui/textarea";
 
-import { categories } from "../_utils/categories";
+import type { Plant } from "../_utils/types";
+import { categories } from "../../_utils/categories";
 
 const formSchema = z.object({
   title: z
@@ -55,29 +53,25 @@ const formSchema = z.object({
       invalid_type_error: "Veuillez entrer une description valide",
     })
     .min(3, { message: "La description doit contenir au moins 3 caractères" }),
-  category: z.string().nanoid(),
   image_url: z.string(),
+  category: z.string().nanoid(),
 });
 
-export function FormPlant() {
-  const router = useRouter();
-
-  const { mutateAsync: editPlant } = api.plant.create.useMutation({
-    onSuccess: () => {
-      toast("Plante ajoutée avec succès");
-      router.refresh();
-    },
-    onError: () => {
-      toast("Erreur lors de l'ajout de la plante");
-    },
-  });
+export function FormPlant({ plantData }: { plantData: Plant }) {
+  const { mutateAsync: editPlant } = api.plant.edit.useMutation();
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
+    defaultValues: {
+      title: plantData.title,
+      description: plantData.description,
+      image_url: plantData.image_url,
+    },
   });
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     await editPlant({
       ...values,
+      id: plantData.id,
     });
   }
 
@@ -87,10 +81,7 @@ export function FormPlant() {
         <div className="mb-10 mt-10 flex-grow">
           <Card className="mx-auto max-w-2xl">
             <CardHeader>
-              <CardTitle>Admin User Management</CardTitle>
-              <CardDescription>
-                Enter user details to create a new user
-              </CardDescription>
+              <CardTitle>Editer la plante</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
@@ -127,6 +118,36 @@ export function FormPlant() {
                     )}
                   />
                 </div>
+                <FormField
+                  control={form.control}
+                  name="image_url"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Description</FormLabel>
+                      <FormControl>
+                        <UploadButton
+                          className="ut-button:bg-red-500 ut-button:ut-readying:bg-red-500/50 ut-button:px-4 mt-4 w-60"
+                          endpoint="imageUploader"
+                          onClientUploadComplete={(res) => {
+                            const files = res as unknown as { url: string }[];
+                            if (Array.isArray(files) && files.length > 0) {
+                              for (const file of files) {
+                                field.onChange(file.url);
+                              }
+                            }
+                          }}
+                          onUploadError={(error: Error) => {
+                            console.log("Files: ", error);
+                          }}
+                        />
+                      </FormControl>
+                      <FormDescription>
+                        This is your public display name.
+                      </FormDescription>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
 
                 <FormField
                   control={form.control}
@@ -190,41 +211,12 @@ export function FormPlant() {
                     </FormItem>
                   )}
                 />
-
-                <FormField
-                  control={form.control}
-                  name="image_url"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Description</FormLabel>
-                      <FormControl>
-                        <UploadButton
-                          className="ut-button:bg-red-500 ut-button:ut-readying:bg-red-500/50 ut-button:px-4 mt-4 w-60"
-                          endpoint="imageUploader"
-                          onClientUploadComplete={(res) => {
-                            const files = res as unknown as { url: string }[];
-                            if (Array.isArray(files) && files.length > 0) {
-                              for (const file of files) {
-                                field.onChange(file.url);
-                              }
-                            }
-                          }}
-                          onUploadError={(error: Error) => {
-                            console.log("Files: ", error);
-                          }}
-                        />
-                      </FormControl>
-                      <FormDescription>
-                        This is your public display name.
-                      </FormDescription>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
               </div>
             </CardContent>
-            <CardFooter className="items-start justify-end">
-              <Button type="submit">Valider</Button>
+            <CardFooter>
+              <Button className="w-full" type="submit">
+                Valider
+              </Button>
             </CardFooter>
           </Card>
         </div>

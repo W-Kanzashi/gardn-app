@@ -1,24 +1,20 @@
 import { relations, sql } from "drizzle-orm";
-import {
-  boolean,
-  primaryKey,
-  timestamp,
-  varchar,
-} from "drizzle-orm/mysql-core";
+import { integer, primaryKey, text } from "drizzle-orm/sqlite-core";
 
-import { createId } from "@paralleldrive/cuid2";
-
+import { nanoid } from "../nanoid";
 import { mySqlTable } from "./_table";
 import { yardToSensor } from "./yard";
 
 export const sensor = mySqlTable("sensor", {
-  id: varchar("id", { length: 30 }).primaryKey().$defaultFn(() => createId()),
-  title: varchar("name", { length: 256 }).notNull(),
-  sensor_id: varchar("sensor_id", { length: 30 }).notNull(),
-  createdAt: timestamp("created_at")
+  id: text("id", { length: 21 })
+    .primaryKey()
+    .$defaultFn(() => nanoid()),
+  title: text("name", { length: 256 }).notNull(),
+  sensor_id: text("sensor_id", { length: 21 }).notNull(),
+  createdAt: text("created_at")
     .default(sql`CURRENT_TIMESTAMP`)
     .notNull(),
-  updatedAt: timestamp("updatedAt").onUpdateNow(),
+  updatedAt: text("updatedAt"),
 });
 
 export const sensorRelations = relations(sensor, ({ many }) => ({
@@ -26,10 +22,14 @@ export const sensorRelations = relations(sensor, ({ many }) => ({
   yards: many(yardToSensor),
 }));
 
-export const yardToUser = mySqlTable("yard_to_user", {
-  yard_id: varchar("yardId", { length: 30 }).notNull(),
-  user_id: varchar("userId", { length: 30 }).notNull(),
-  favorite: boolean("favorite").default(false),
-}, (table) => ({
-  pk_yard_to_user: primaryKey({ columns: [table.yard_id, table.user_id] }),
-}));
+export const yardToUser = mySqlTable(
+  "yard_to_user",
+  {
+    yard_id: text("yardId", { length: 21 }).notNull(),
+    user_id: text("userId").notNull(),
+    favorite: integer("favorite", { mode: "boolean" }).default(false),
+  },
+  (table) => ({
+    pk_yard_to_user: primaryKey({ columns: [table.yard_id, table.user_id] }),
+  }),
+);

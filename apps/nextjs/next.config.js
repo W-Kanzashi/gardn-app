@@ -27,10 +27,10 @@ const config = {
     remotePatterns: [
       {
         protocol: "https",
-        hostname: "picsum.photos",
-        port: ""
+        hostname: "utfs.io",
+        port: "",
       },
-    ]
+    ],
   },
 };
 

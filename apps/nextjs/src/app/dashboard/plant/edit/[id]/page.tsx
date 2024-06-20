@@ -1,13 +1,11 @@
-import { db, eq } from "@acme/db";
 import { plant } from "node_modules/@acme/db/src/schema/plant";
-import { FormPlant } from "./form";
-import { plantSchema } from "./types";
 
-async function getPlantInfo({
-  plantId,
-}: {
-  plantId: string | undefined;
-}) {
+import { db, eq } from "@acme/db";
+
+import { plantSchema } from "../_utils/types";
+import { FormPlant } from "./form";
+
+async function getPlantInfo({ plantId }: { plantId: string | undefined }) {
   if (!plantId) {
     return null;
   }
@@ -25,6 +23,7 @@ async function getPlantInfo({
   const validatedPlant = plantSchema.safeParse(plantData);
 
   if (!validatedPlant.success) {
+    console.log(validatedPlant.error);
     return null;
   }
 
@@ -32,16 +31,12 @@ async function getPlantInfo({
 }
 
 export default async function EditPlant({
-  searchParams,
+  params,
 }: {
-  searchParams: { id: string | undefined };
+  params: { id?: string };
 }) {
-  if (!searchParams.id) {
-    return null;
-  }
-
   const plantData = await getPlantInfo({
-    plantId: searchParams.id,
+    plantId: params.id,
   });
 
   if (!plantData) {

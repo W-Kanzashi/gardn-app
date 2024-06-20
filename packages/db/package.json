@@ -11,25 +11,26 @@
     "clean": "rm -rf .turbo node_modules",
     "format": "prettier --check . --ignore-path ../../.gitignore",
     "lint": "eslint .",
-    "push": "pnpm with-env drizzle-kit push:mysql",
+    "push": "pnpm with-env drizzle-kit push:sqlite",
     "studio": "pnpm with-env drizzle-kit studio",
     "typecheck": "tsc --noEmit",
     "with-env": "dotenv -e ../../.env --"
   },
   "dependencies": {
-    "@paralleldrive/cuid2": "^2.2.2",
-    "@planetscale/database": "^1.16.0",
-    "drizzle-orm": "^0.29.3"
+    "@libsql/client": "^0.6.2",
+    "drizzle-orm": "^0.29.5",
+    "nanoid": "^5.0.7",
+    "next-auth": "beta"
   },
   "devDependencies": {
     "@acme/eslint-config": "workspace:^",
     "@acme/prettier-config": "workspace:^",
     "@acme/tsconfig": "workspace:^",
-    "dotenv-cli": "^7.3.0",
-    "drizzle-kit": "^0.20.14",
-    "eslint": "^8.56.0",
-    "prettier": "^3.2.5",
-    "typescript": "^5.3.3"
+    "dotenv-cli": "^7.4.2",
+    "drizzle-kit": "^0.20.18",
+    "eslint": "^8.57.0",
+    "prettier": "^3.3.2",
+    "typescript": "^5.4.5"
   },
   "eslintConfig": {
     "root": true,
