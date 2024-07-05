@@ -1,0 +1,486 @@
+"use client";
+
+import Image from "next/image";
+import { useRouter } from "next/navigation";
+import { api } from "@/trpc/react";
+import { UploadButton } from "@/utils/uploadthing";
+import { zodResolver } from "@hookform/resolvers/zod";
+import Dinero from "dinero.js";
+import { PlusCircle, Upload } from "lucide-react";
+import CurrencyInput from "react-currency-input-field";
+import { useForm } from "react-hook-form";
+import { toast } from "sonner";
+import { z } from "zod";
+
+import { nanoid } from "@acme/db/nanoid";
+import { cn } from "@acme/ui";
+import { Badge } from "@acme/ui/badge";
+import { Button } from "@acme/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@acme/ui/card";
+import {
+  Form,
+  FormControl,
+  FormDescription,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+  useFieldArray,
+} from "@acme/ui/form";
+import { Input } from "@acme/ui/input";
+import { Label } from "@acme/ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@acme/ui/select";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@acme/ui/table";
+import { Textarea } from "@acme/ui/textarea";
+import { ToggleGroup, ToggleGroupItem } from "@acme/ui/toggle-group";
+
+const formSchema = z.object({
+  title: z
+    .string({
+      required_error: "Veuillez entrer un nom",
+      invalid_type_error: "Veuillez entrer un nom valide",
+    })
+    .min(3, { message: "Le nom doit contenir au moins 3 caractères" }),
+  description: z
+    .string({
+      required_error: "Veuillez entrer une description",
+      invalid_type_error: "Veuillez entrer une description valide",
+    })
+    .min(3, { message: "La description doit contenir au moins 3 caractères" }),
+  price: z.string(),
+  sub_article: z.array(
+    z.object({
+      option_id: z.string().nanoid(),
+      name: z.string().min(1),
+      price: z.number(),
+      stock: z.string(),
+      available: z.boolean(),
+    }),
+  ),
+  category_id: z.string().nanoid(),
+  image_url: z.string(),
+  active: z.boolean(),
+  stock: z.string(),
+});
+
+export function FormArticle() {
+  const router = useRouter();
+
+  const { mutateAsync: editArticle } = api.article.create.useMutation({
+    onSuccess: () => {
+      toast("Article ajoutée avec succès");
+      router.refresh();
+    },
+    onError: () => {
+      toast("Erreur lors de l'ajout de la article");
+    },
+  });
+  const form = useForm<z.infer<typeof formSchema>>({
+    resolver: zodResolver(formSchema),
+  });
+
+  const optionFieldArray = useFieldArray({
+    control: form.control,
+    name: "sub_article",
+  });
+
+  async function onSubmit(values: z.infer<typeof formSchema>) {
+    console.log(values);
+    // await editArticle({
+    //   ...values,
+    // });
+  }
+
+  console.log(form.watch());
+
+  return (
+    <Form {...form}>
+      <form onSubmit={form.handleSubmit(onSubmit)}>
+        <div className="flex min-h-screen w-full flex-col bg-muted/40">
+          <div className="flex flex-col sm:gap-4 sm:py-4 sm:pl-14">
+            <main className="grid flex-1 items-start gap-4 p-4 sm:px-6 sm:py-0 md:gap-8">
+              <div className="mx-auto grid max-w-[59rem] flex-1 auto-rows-max gap-4">
+                <div className="flex items-center gap-4">
+                  <div className="hidden items-center gap-2 md:ml-auto md:flex">
+                    <Button type="submit" variant="outline" size="sm">
+                      Discard
+                    </Button>
+                    <Button size="sm">Save Product</Button>
+                  </div>
+                </div>
+                <div className="grid gap-4 md:grid-cols-[1fr_250px] lg:grid-cols-3 lg:gap-8">
+                  <div className="grid auto-rows-max items-start gap-4 lg:col-span-2 lg:gap-8">
+                    <Card x-chunk="dashboard-07-chunk-0">
+                      <CardHeader>
+                        <CardTitle>Article</CardTitle>
+                        <CardDescription>
+                          Détails de l&apos;article
+                        </CardDescription>
+                      </CardHeader>
+                      <CardContent>
+                        <div className="grid gap-6">
+                          <div className="grid gap-3">
+                            <FormField
+                              control={form.control}
+                              name="title"
+                              render={({ field }) => (
+                                <FormItem>
+                                  <FormLabel>Titre</FormLabel>
+                                  <FormControl>
+                                    <Input placeholder="Pomme" {...field} />
+                                  </FormControl>
+                                  <FormMessage />
+                                </FormItem>
+                              )}
+                            />
+                          </div>
+                          <div className="grid gap-3">
+                            <FormField
+                              control={form.control}
+                              name="description"
+                              render={({ field }) => (
+                                <FormItem>
+                                  <FormLabel>Description</FormLabel>
+                                  <FormControl>
+                                    <Textarea placeholder="Pomme" {...field} />
+                                  </FormControl>
+                                  <FormMessage />
+                                </FormItem>
+                              )}
+                            />
+                          </div>
+                        </div>
+                      </CardContent>
+                    </Card>
+                    <Card x-chunk="dashboard-07-chunk-1">
+                      <CardHeader>
+                        <CardTitle>Stock</CardTitle>
+                        <CardDescription>
+                          Lipsum dolor sit amet, consectetur adipiscing elit
+                        </CardDescription>
+                      </CardHeader>
+                      <CardContent>
+                        <Table
+                          className={cn(
+                            optionFieldArray.fields.length > 0
+                              ? "block"
+                              : "hidden",
+                          )}
+                        >
+                          <TableHeader>
+                            <TableRow>
+                              <TableHead className="w-[100px]">Titre</TableHead>
+                              <TableHead>Stock</TableHead>
+                              <TableHead>Prix</TableHead>
+                            </TableRow>
+                          </TableHeader>
+                          <TableBody>
+                            {optionFieldArray.fields.map((option, index) => {
+                              return (
+                                <TableRow key={index}>
+                                  <TableCell className="font-semibold">
+                                    <FormField
+                                      control={form.control}
+                                      name={`sub_article.${index}.name`}
+                                      render={({ field }) => (
+                                        <FormItem>
+                                          <FormLabel className="sr-only">
+                                            {option.name}
+                                          </FormLabel>
+                                          <FormControl>
+                                            <Input
+                                              placeholder="Pomme"
+                                              {...field}
+                                            />
+                                          </FormControl>
+                                          <FormMessage />
+                                        </FormItem>
+                                      )}
+                                    />
+                                  </TableCell>
+                                  <TableCell>
+                                    <FormField
+                                      control={form.control}
+                                      name={`sub_article.${index}.stock`}
+                                      render={({ field }) => (
+                                        <FormItem>
+                                          <Label
+                                            htmlFor="stock-1"
+                                            className="sr-only"
+                                          >
+                                            {option.stock}
+                                          </Label>
+                                          <FormControl>
+                                            <Input
+                                              placeholder="Pomme"
+                                              {...field}
+                                            />
+                                          </FormControl>
+                                          <FormMessage />
+                                        </FormItem>
+                                      )}
+                                    />
+                                  </TableCell>
+                                  <TableCell>
+                                    <FormField
+                                      control={form.control}
+                                      name={`sub_article.${index}.price`}
+                                      render={({ field }) => (
+                                        <FormItem>
+                                          <Label className="sr-only">
+                                            {Dinero({
+                                              amount:
+                                                (option.price as unknown as number) *
+                                                100,
+                                              currency: "EUR",
+                                              precision: 2,
+                                            })
+                                              .setLocale("fr")
+                                              .toFormat("$0,0.00")}
+                                          </Label>
+                                          <FormControl>
+                                            <CurrencyInput
+                                              placeholder="0.00"
+                                              decimalsLimit={2}
+                                              lang="fr"
+                                              name={field.name}
+                                              min={0}
+                                              prefix="€"
+                                              className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50"
+                                              onValueChange={(value) =>
+                                                field.onChange(value)
+                                              }
+                                            />
+                                          </FormControl>
+                                          <FormMessage />
+                                        </FormItem>
+                                      )}
+                                    />
+                                  </TableCell>
+                                  <TableCell>
+                                    <Button
+                                      type="button"
+                                      size="sm"
+                                      variant="outline"
+                                      onClick={() =>
+                                        optionFieldArray.remove(index)
+                                      }
+                                    >
+                                      Supprimer
+                                    </Button>
+                                  </TableCell>
+                                </TableRow>
+                              );
+                            })}
+                          </TableBody>
+                        </Table>
+                      </CardContent>
+                      <CardFooter className="justify-center border-t p-4">
+                        <Button
+                          type="button"
+                          size="sm"
+                          variant="ghost"
+                          className="gap-1"
+                          onClick={() =>
+                            optionFieldArray.append({
+                              option_id: nanoid(),
+                              name: "",
+                              stock: "0",
+                              price: 0,
+                              available: false,
+                            })
+                          }
+                        >
+                          <PlusCircle className="h-3.5 w-3.5" />
+                          Add Variant
+                        </Button>
+                      </CardFooter>
+                    </Card>
+                    <Card x-chunk="dashboard-07-chunk-2">
+                      <CardHeader>
+                        <CardTitle>Product Category</CardTitle>
+                      </CardHeader>
+                      <CardContent>
+                        <div className="grid gap-6 sm:grid-cols-3">
+                          <div className="grid gap-3">
+                            <FormField
+                              control={form.control}
+                              name="category_id"
+                              render={({ field }) => (
+                                <FormItem>
+                                  <Label htmlFor="category">Category</Label>
+                                  <FormControl>
+                                    <Select onValueChange={field.onChange}>
+                                      <SelectTrigger aria-label="Select category">
+                                        <SelectValue placeholder="Select category" />
+                                      </SelectTrigger>
+                                      <SelectContent>
+                                        <SelectItem value="tools">
+                                          Outils
+                                        </SelectItem>
+                                        <SelectItem value="plants">
+                                          Plantes
+                                        </SelectItem>
+                                        <SelectItem value="seeds">
+                                          Graines
+                                        </SelectItem>
+                                      </SelectContent>
+                                    </Select>
+                                  </FormControl>
+                                  <FormMessage />
+                                </FormItem>
+                              )}
+                            />
+                          </div>
+                          <div className="grid gap-3">
+                            <Label htmlFor="subcategory">
+                              Subcategory (optional)
+                            </Label>
+                            <Select>
+                              <SelectTrigger
+                                id="subcategory"
+                                aria-label="Select subcategory"
+                              >
+                                <SelectValue placeholder="Select subcategory" />
+                              </SelectTrigger>
+                              <SelectContent>
+                                <SelectItem value="t-shirts">
+                                  T-Shirts
+                                </SelectItem>
+                                <SelectItem value="hoodies">Hoodies</SelectItem>
+                                <SelectItem value="sweatshirts">
+                                  Sweatshirts
+                                </SelectItem>
+                              </SelectContent>
+                            </Select>
+                          </div>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  </div>
+                  <div className="grid auto-rows-max items-start gap-4 lg:gap-8">
+                    <Card x-chunk="dashboard-07-chunk-3">
+                      <CardHeader>
+                        <CardTitle>Product Status</CardTitle>
+                      </CardHeader>
+                      <CardContent>
+                        <div className="grid gap-6">
+                          <div className="grid gap-3">
+                            <Label htmlFor="status">Status</Label>
+                            <Select>
+                              <SelectTrigger
+                                id="status"
+                                aria-label="Select status"
+                              >
+                                <SelectValue placeholder="Select status" />
+                              </SelectTrigger>
+                              <SelectContent>
+                                <SelectItem value="draft">Draft</SelectItem>
+                                <SelectItem value="published">
+                                  Active
+                                </SelectItem>
+                                <SelectItem value="archived">
+                                  Archived
+                                </SelectItem>
+                              </SelectContent>
+                            </Select>
+                          </div>
+                        </div>
+                      </CardContent>
+                    </Card>
+                    <Card
+                      className="overflow-hidden"
+                      x-chunk="dashboard-07-chunk-4"
+                    >
+                      <CardHeader>
+                        <CardTitle>Product Images</CardTitle>
+                        <CardDescription>
+                          Lipsum dolor sit amet, consectetur adipiscing elit
+                        </CardDescription>
+                      </CardHeader>
+                      <CardContent>
+                        <div className="grid gap-2">
+                          <Image
+                            alt="Product image"
+                            className="aspect-square w-full rounded-md object-cover"
+                            height="300"
+                            src="/placeholder.svg"
+                            width="300"
+                          />
+                          <div className="grid grid-cols-3 gap-2">
+                            <button>
+                              <Image
+                                alt="Product image"
+                                className="aspect-square w-full rounded-md object-cover"
+                                height="84"
+                                src="/placeholder.svg"
+                                width="84"
+                              />
+                            </button>
+                            <button>
+                              <Image
+                                alt="Product image"
+                                className="aspect-square w-full rounded-md object-cover"
+                                height="84"
+                                src="/placeholder.svg"
+                                width="84"
+                              />
+                            </button>
+                            <button className="flex aspect-square w-full items-center justify-center rounded-md border border-dashed">
+                              <Upload className="h-4 w-4 text-muted-foreground" />
+                              <span className="sr-only">Upload</span>
+                            </button>
+                          </div>
+                        </div>
+                      </CardContent>
+                    </Card>
+                    <Card x-chunk="dashboard-07-chunk-5">
+                      <CardHeader>
+                        <CardTitle>Archive Product</CardTitle>
+                        <CardDescription>
+                          Lipsum dolor sit amet, consectetur adipiscing elit.
+                        </CardDescription>
+                      </CardHeader>
+                      <CardContent>
+                        <div></div>
+                        <Button size="sm" variant="secondary">
+                          Archive Product
+                        </Button>
+                      </CardContent>
+                    </Card>
+                  </div>
+                </div>
+                <div className="flex items-center justify-center gap-2 md:hidden">
+                  <Button variant="outline" size="sm">
+                    Discard
+                  </Button>
+                  <Button size="sm">Save Product</Button>
+                </div>
+              </div>
+            </main>
+          </div>
+        </div>
+      </form>
+    </Form>
+  );
+}

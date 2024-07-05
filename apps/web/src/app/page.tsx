@@ -11,7 +11,7 @@ export default function Page() {
   return (
     <main className="space-y-10">
       <section className="relative md:h-screen">
-        <div className="absolute bottom-0 left-0 -z-50 hidden h-1/2 w-full md:block md:h-2/3 lg:h-full">
+        <div className="absolute bottom-0 left-0 -z-50 hidden h-1/2 w-full md:block md:h-full lg:h-full">
           <Image
             src="/home.png"
             alt="Gard'n champ"
@@ -67,7 +67,7 @@ export default function Page() {
               className="aspect-auto h-full w-full object-cover md:hidden"
             />
             <Link
-              href="/"
+              href="#"
               className="absolute bottom-4 left-4 flex max-w-max flex-row items-center gap-4 rounded-full bg-primary px-4 py-1 font-bold text-white md:relative md:bottom-0 md:left-10 lg:relative lg:text-lg"
             >
               <span>Je découvre l&apos;application</span>{" "}

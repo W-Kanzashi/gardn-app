@@ -1,4 +1,10 @@
+import { forwardRef } from "react";
+import { CheckCircledIcon } from "@radix-ui/react-icons";
+
+import { db } from "@acme/db";
+import { cn } from "@acme/ui";
 import { Button } from "@acme/ui/button";
+import { Popover, PopoverContent, PopoverTrigger } from "@acme/ui/popover";
 import {
   Table,
   TableBody,
@@ -7,19 +13,14 @@ import {
   TableHeader,
   TableRow,
 } from "@acme/ui/table";
-import { Popover, PopoverContent, PopoverTrigger } from "@acme/ui/popover";
-import { db } from "@acme/db";
-import { CheckCircledIcon } from "@radix-ui/react-icons";
-import { cn } from "@acme/ui";
-import { forwardRef } from "react";
 
 export default async function Component() {
-  const usersData = await db.query.users.findMany();
+  const usersData = await db.query.user.findMany();
 
   return (
     <div className="flex">
       <main className="flex-grow p-6">
-        <div className="flex justify-between items-center mb-4">
+        <div className="mb-4 flex items-center justify-between">
           <h1 className="text-lg font-medium">Liste des utilisateurs</h1>
         </div>
         <Table>
@@ -50,19 +51,19 @@ export default async function Component() {
                     <Popover>
                       <PopoverTrigger asChild>
                         <Button
-                          className="py-1 px-2 text-black bg-transparent rounded hover:bg-gray-200 active:bg-gray-300"
+                          className="rounded bg-transparent px-2 py-1 text-black hover:bg-gray-200 active:bg-gray-300"
                           type="button"
                         >
-                          <MoreVerticalIcon className="w-4 h-4" />
+                          <MoreVerticalIcon className="h-4 w-4" />
                         </Button>
                       </PopoverTrigger>
                       <PopoverContent className="w-40">
-                        <button className="flex items-center py-2 px-2 space-x-2 w-full text-gray-500 rounded-lg hover:bg-gray-200 active:bg-gray-300">
-                          <FileEditIcon className="w-4 h-4" />
+                        <button className="flex w-full items-center space-x-2 rounded-lg px-2 py-2 text-gray-500 hover:bg-gray-200 active:bg-gray-300">
+                          <FileEditIcon className="h-4 w-4" />
                           <span className="text-sm font-medium">Modifier</span>
                         </button>
-                        <button className="flex items-center py-2 px-2 space-x-2 w-full text-gray-500 rounded-lg hover:bg-gray-200 active:bg-gray-300">
-                          <DeleteIcon className="w-4 h-4" />
+                        <button className="flex w-full items-center space-x-2 rounded-lg px-2 py-2 text-gray-500 hover:bg-gray-200 active:bg-gray-300">
+                          <DeleteIcon className="h-4 w-4" />
                           <span className="text-sm font-medium">Supprimer</span>
                         </button>
                       </PopoverContent>

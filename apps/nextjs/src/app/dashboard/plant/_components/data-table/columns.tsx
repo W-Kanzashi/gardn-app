@@ -95,7 +95,7 @@ export const columns: ColumnDef<Plant>[] = [
               className="flex w-full items-center space-x-2 rounded-lg px-2 py-2 text-gray-500 hover:bg-gray-200 active:bg-gray-300"
             >
               <GearIcon className="h-4 w-4" />
-              <span className="text-sm font-medium">Edit</span>
+              <span className="text-sm font-medium">Editer</span>
             </Link>
             <DeletePlant plantId={row.original.id} />
           </PopoverContent>

@@ -1,13 +1,16 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { PlusIcon } from "@radix-ui/react-icons";
+import { z } from "zod";
 
 import { auth } from "@acme/auth";
-import { db, eq, schema } from "@acme/db";
+import { db, eq } from "@acme/db";
+import { plant } from "@acme/db/schema";
 import { Button } from "@acme/ui/button";
 
 import { columns } from "./_components/data-table/columns";
 import { DataTable } from "./_components/data-table/data-table";
+import { plantSchema } from "./_utils/types";
 
 export default async function Component() {
   const session = await auth();
@@ -17,8 +20,14 @@ export default async function Component() {
   }
 
   const plants = await db.query.plant.findMany({
-    where: eq(schema.plant.deleted, false),
+    where: eq(plant.deleted, false),
   });
+
+  const validatedPlant = z.array(plantSchema).safeParse(plants);
+
+  if (!validatedPlant.success) {
+    return null;
+  }
 
   return (
     <div className="flex">
@@ -36,7 +45,7 @@ export default async function Component() {
             </Link>
           </Button>
         </div>
-        <DataTable columns={columns} data={plants} />
+        <DataTable columns={columns} data={validatedPlant.data} />
       </main>
     </div>
   );

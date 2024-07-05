@@ -12,14 +12,6 @@ import { z } from "zod";
 import { cn } from "@acme/ui";
 import { Button } from "@acme/ui/button";
 import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@acme/ui/card";
-import {
   Command,
   CommandEmpty,
   CommandGroup,
@@ -84,150 +76,131 @@ export function FormPlant() {
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-        <div className="mb-10 mt-10 flex-grow">
-          <Card className="mx-auto max-w-2xl">
-            <CardHeader>
-              <CardTitle>Admin User Management</CardTitle>
-              <CardDescription>
-                Enter user details to create a new user
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-4">
-                <div className="grid grid-cols-2 gap-4">
-                  <FormField
-                    control={form.control}
-                    name="title"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Nom</FormLabel>
-                        <FormControl>
-                          <Input placeholder="plant" {...field} />
-                        </FormControl>
-                        <FormDescription>Nom de la plante</FormDescription>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
+        <div className="space-y-4">
+          <div className="grid grid-cols-2 gap-4">
+            <FormField
+              control={form.control}
+              name="title"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Nom</FormLabel>
+                  <FormControl>
+                    <Input placeholder="plant" {...field} />
+                  </FormControl>
+                  <FormDescription>Nom de la plante</FormDescription>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
 
-                  <FormField
-                    control={form.control}
-                    name="description"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Description</FormLabel>
-                        <FormControl>
-                          <Textarea placeholder="plant" {...field} />
-                        </FormControl>
-                        <FormDescription>
-                          Une description de la plante
-                        </FormDescription>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                </div>
+            <FormField
+              control={form.control}
+              name="description"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Description</FormLabel>
+                  <FormControl>
+                    <Textarea placeholder="plant" {...field} />
+                  </FormControl>
+                  <FormDescription>
+                    Une description de la plante
+                  </FormDescription>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          </div>
 
-                <FormField
-                  control={form.control}
-                  name="category"
-                  render={({ field }) => (
-                    <FormItem className="flex flex-col">
-                      <FormLabel>Categorie</FormLabel>
-                      <Popover>
-                        <PopoverTrigger asChild>
-                          <FormControl>
-                            <Button
-                              variant="outline"
-                              role="combobox"
-                              className={cn(
-                                "w-[200px] justify-between",
-                                !field.value && "text-muted-foreground",
-                              )}
+          <FormField
+            control={form.control}
+            name="category"
+            render={({ field }) => (
+              <FormItem className="flex flex-col">
+                <FormLabel>Categorie</FormLabel>
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <FormControl>
+                      <Button
+                        variant="outline"
+                        role="combobox"
+                        className={cn(
+                          "w-[200px] justify-between",
+                          !field.value && "text-muted-foreground",
+                        )}
+                      >
+                        {field.value
+                          ? categories.find(
+                              (category) => category.id === field.value,
+                            )?.label
+                          : "Choisir une categorie"}
+                        <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                      </Button>
+                    </FormControl>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-[200px] p-0">
+                    <Command>
+                      <CommandList>
+                        <CommandInput placeholder="Search category..." />
+                        <CommandEmpty>Aucune categorie trouvée</CommandEmpty>
+                        <CommandGroup>
+                          {categories.map((category) => (
+                            <CommandItem
+                              value={category.label}
+                              key={category.value}
+                              onSelect={() => {
+                                form.setValue("category", category.id);
+                              }}
                             >
-                              {field.value
-                                ? categories.find(
-                                    (category) => category.id === field.value,
-                                  )?.label
-                                : "Choisir une categorie"}
-                              <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-                            </Button>
-                          </FormControl>
-                        </PopoverTrigger>
-                        <PopoverContent className="w-[200px] p-0">
-                          <Command>
-                            <CommandList>
-                              <CommandInput placeholder="Search category..." />
-                              <CommandEmpty>
-                                Aucune categorie trouvée
-                              </CommandEmpty>
-                              <CommandGroup>
-                                {categories.map((category) => (
-                                  <CommandItem
-                                    value={category.label}
-                                    key={category.value}
-                                    onSelect={() => {
-                                      form.setValue("category", category.id);
-                                    }}
-                                  >
-                                    <Check
-                                      className={cn(
-                                        "mr-2 h-4 w-4",
-                                        category.value === field.value
-                                          ? "opacity-100"
-                                          : "opacity-0",
-                                      )}
-                                    />
-                                    {category.label}
-                                  </CommandItem>
-                                ))}
-                              </CommandGroup>
-                            </CommandList>
-                          </Command>
-                        </PopoverContent>
-                      </Popover>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
+                              <Check
+                                className={cn(
+                                  "mr-2 h-4 w-4",
+                                  category.value === field.value
+                                    ? "opacity-100"
+                                    : "opacity-0",
+                                )}
+                              />
+                              {category.label}
+                            </CommandItem>
+                          ))}
+                        </CommandGroup>
+                      </CommandList>
+                    </Command>
+                  </PopoverContent>
+                </Popover>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
 
-                <FormField
-                  control={form.control}
-                  name="image_url"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Description</FormLabel>
-                      <FormControl>
-                        <UploadButton
-                          className="ut-button:bg-red-500 ut-button:ut-readying:bg-red-500/50 ut-button:px-4 mt-4 w-60"
-                          endpoint="imageUploader"
-                          onClientUploadComplete={(res) => {
-                            const files = res as unknown as { url: string }[];
-                            if (Array.isArray(files) && files.length > 0) {
-                              for (const file of files) {
-                                field.onChange(file.url);
-                              }
-                            }
-                          }}
-                          onUploadError={(error: Error) => {
-                            console.log("Files: ", error);
-                          }}
-                        />
-                      </FormControl>
-                      <FormDescription>
-                        This is your public display name.
-                      </FormDescription>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              </div>
-            </CardContent>
-            <CardFooter className="items-start justify-end">
-              <Button type="submit">Valider</Button>
-            </CardFooter>
-          </Card>
+          <FormField
+            control={form.control}
+            name="image_url"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Description</FormLabel>
+                <FormControl>
+                  <UploadButton
+                    className="ut-button:bg-red-500 ut-button:ut-readying:bg-red-500/50 ut-button:px-4 mt-4 w-60"
+                    endpoint="imageUploader"
+                    onClientUploadComplete={(res) => {
+                      const files = res as unknown as { url: string }[];
+                      if (Array.isArray(files) && files.length > 0) {
+                        for (const file of files) {
+                          field.onChange(file.url);
+                        }
+                      }
+                    }}
+                    onUploadError={(error: Error) => {
+                      console.log("Files: ", error);
+                    }}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
         </div>
+        <Button type="submit">Valider</Button>
       </form>
     </Form>
   );

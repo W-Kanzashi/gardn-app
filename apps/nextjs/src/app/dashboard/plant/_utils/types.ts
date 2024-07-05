@@ -7,8 +7,8 @@ const plantSchema = z.object({
   image_url: z.string(),
   deleted: z.boolean(),
   category_id: z.string(),
-  createdAt: z.string(),
-  updatedAt: z.string(),
+  created_at: z.date(),
+  // updated_at: z.date().nullish(),
 });
 
 type Plant = z.infer<typeof plantSchema>;

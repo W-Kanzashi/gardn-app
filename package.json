@@ -4,14 +4,15 @@
   "engines": {
     "node": ">=20.11.0"
   },
-  "packageManager": "pnpm@8.15.1",
+  "packageManager": "pnpm@8.15.5",
   "scripts": {
     "build": "turbo build",
     "clean": "git clean -xdf node_modules",
     "clean:workspaces": "turbo clean",
     "db:push": "pnpm -F db push",
     "db:studio": "pnpm -F db studio",
-    "dev": "turbo dev --parallel",
+    "dev": "turbo watch dev",
+    "dev:next": "turbo watch dev -F @acme/nextjs...",
     "format": "turbo format --continue -- --cache --cache-location node_modules/.cache/.prettiercache",
     "format:fix": "turbo format --continue -- --write --cache --cache-location node_modules/.cache/.prettiercache",
     "lint": "turbo lint --continue -- --cache --cache-location node_modules/.cache/.eslintcache",
@@ -21,11 +22,11 @@
     "typecheck": "turbo typecheck"
   },
   "devDependencies": {
-    "@acme/prettier-config": "workspace:^",
-    "@turbo/gen": "^1.13.4",
+    "@acme/prettier-config": "workspace:*",
+    "@turbo/gen": "^2.0.4",
     "prettier": "^3.3.2",
-    "turbo": "^1.13.4",
-    "typescript": "^5.4.5"
+    "turbo": "^2.0.4",
+    "typescript": "^5.5.2"
   },
   "prettier": "@acme/prettier-config"
 }

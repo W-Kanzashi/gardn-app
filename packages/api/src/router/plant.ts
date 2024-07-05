@@ -1,10 +1,23 @@
 import { z } from "zod";
 
-import { eq, schema } from "@acme/db";
+import { eq } from "@acme/db";
+import * as schema from "@acme/db/schema";
 
 import { createTRPCRouter, protectedProcedure, publicProcedure } from "../trpc";
 
 export const plantRouter = createTRPCRouter({
+  byId: protectedProcedure
+    .input(z.object({ id: z.string().cuid2() }))
+    .query(({ ctx, input }) => {
+      return ctx.db.query.plant.findFirst({
+        where: eq(schema.plant.id, input.id),
+        columns: {
+          updated_at: false,
+          deleted: false,
+        },
+      });
+    }),
+
   list: publicProcedure.query(({ ctx }) => {
     return ctx.db.query.plant.findMany();
   }),
