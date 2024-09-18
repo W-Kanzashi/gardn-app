@@ -16,9 +16,9 @@ export const columns: ColumnDef<Article>[] = [
   {
     id: "Identifiant",
     accessorKey: "id",
-    header: ({ column }) => <div className="w-[100px]">{column.id}</div>,
+    header: ({ column }) => <div>{column.id}</div>,
     cell: ({ row }) => {
-      return <div className="w-[100px] truncate">{row.original.id}</div>;
+      return <div className="w-[100px]">{row.original.id}</div>;
     },
   },
   {
@@ -26,11 +26,7 @@ export const columns: ColumnDef<Article>[] = [
     accessorKey: "title",
     header: ({ column }) => <div>{column.id}</div>,
     cell: ({ row }) => {
-      return (
-        <div>
-          <span className="capitalize">{row.original.title}</span>
-        </div>
-      );
+      return <div className="capitalize">{row.original.title}</div>;
     },
   },
   {

@@ -6,8 +6,8 @@ import * as schema from "@acme/db/schema";
 import { createTRPCRouter, protectedProcedure, publicProcedure } from "../trpc";
 
 export const plantRouter = createTRPCRouter({
-  byId: protectedProcedure
-    .input(z.object({ id: z.string().cuid2() }))
+  byId: publicProcedure
+    .input(z.object({ id: z.string().nanoid() }))
     .query(({ ctx, input }) => {
       return ctx.db.query.plant.findFirst({
         where: eq(schema.plant.id, input.id),
@@ -19,7 +19,12 @@ export const plantRouter = createTRPCRouter({
     }),
 
   list: publicProcedure.query(({ ctx }) => {
-    return ctx.db.query.plant.findMany();
+    return ctx.db.query.plant.findMany({
+      columns: {
+        id: true,
+        title: true,
+      },
+    });
   }),
 
   create: publicProcedure

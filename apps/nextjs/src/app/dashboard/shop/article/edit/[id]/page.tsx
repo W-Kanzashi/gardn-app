@@ -1,50 +1,71 @@
-import { db, eq } from "@acme/db";
-import { plant } from "@acme/db/schema";
+import { z } from "zod";
 
-import { plantSchema } from "../_utils/types";
-import { FormPlant } from "./form";
+import { db, eq, sql } from "@acme/db";
+import { article, article_category } from "@acme/db/schema";
 
-async function getPlantInfo({ plantId }: { plantId: string | undefined }) {
-  if (!plantId) {
+import { articleSchema, categorySchema } from "../_utils/types";
+import { FormArticle } from "./form";
+
+async function getArticleInfo({
+  articleId,
+}: {
+  articleId: string | undefined;
+}) {
+  if (!articleId) {
     return null;
   }
 
-  const plantData = await db.query.plant.findFirst({
-    where: eq(plant.id, plantId),
-    columns: {
-      id: true,
-      title: true,
-      description: true,
-      image_url: true,
-      category_id: true,
-    },
-  });
+  const [articleData] = await db
+    .select({
+      id: article.id,
+      title: article.title,
+      description: article.description,
+      image_url: article.image_url,
+      category_id: article.category_id,
+      category_title: sql`${article_category.title}`,
+      price: article.price,
+      active: article.active,
+      stock: article.stock,
+      option: article.option,
+    })
+    .from(article)
+    .innerJoin(article_category, eq(article_category.id, article.category_id))
+    .where(eq(article.id, articleId))
+    .limit(1);
+  const categoryData = await db
+    .select({
+      id: article_category.id,
+      title: article_category.title,
+    })
+    .from(article_category);
 
-  const validatedPlant = plantSchema.safeParse(plantData);
+  const validatedArticle = z
+    .tuple([articleSchema, z.array(categorySchema)])
+    .safeParse([articleData, categoryData]);
 
-  if (!validatedPlant.success) {
+  if (!validatedArticle.success) {
     return null;
   }
 
-  return validatedPlant.data;
+  return validatedArticle.data;
 }
 
-export default async function EditPlant({
+export default async function EditArticle({
   params,
 }: {
   params: { id?: string };
 }) {
-  const plantData = await getPlantInfo({
-    plantId: params.id,
+  const data = await getArticleInfo({
+    articleId: params.id,
   });
 
-  if (!plantData) {
+  if (!data) {
     return null;
   }
 
   return (
     <div>
-      <FormPlant plantData={plantData} />
+      <FormArticle article={data[0]} categories={data[1]} />
     </div>
   );
 }

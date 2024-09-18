@@ -8,7 +8,7 @@ export default function CategoryLayout({
   edit: ReactNode;
 }) {
   return (
-    <main className="container mx-auto grid grid-cols-3 gap-4">
+    <main className="grid grid-cols-3 gap-4 p-8">
       {children}
       {edit}
     </main>

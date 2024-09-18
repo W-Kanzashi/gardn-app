@@ -2,6 +2,7 @@
 
 import type { ColumnDef, ColumnFiltersState } from "@tanstack/react-table";
 import { useState } from "react";
+import Link from "next/link";
 import {
   flexRender,
   getCoreRowModel,
@@ -9,6 +10,7 @@ import {
   useReactTable,
 } from "@tanstack/react-table";
 
+import { Button } from "@acme/ui/button";
 import { Input } from "@acme/ui/input";
 import {
   Table,
@@ -43,7 +45,7 @@ export function DataTable<TData, TValue>({
 
   return (
     <div>
-      <div className="flex items-center py-4">
+      <div className="flex items-center gap-4 py-4">
         <Input
           placeholder="Filtrer par nom..."
           value={(table.getColumn("Nom")?.getFilterValue() as string) ?? ""}
@@ -52,6 +54,18 @@ export function DataTable<TData, TValue>({
           }
           className="max-w-sm"
         />
+        <Button variant="outline">
+          <Link
+            href={{
+              pathname: "/dashboard/shop/category",
+              query: {
+                action: "create",
+              },
+            }}
+          >
+            Ajouter
+          </Link>
+        </Button>
       </div>
       <div className="rounded-md border">
         <Table>

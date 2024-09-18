@@ -1,0 +1,27 @@
+{
+  "version": "7",
+  "dialect": "sqlite",
+  "entries": [
+    {
+      "idx": 0,
+      "version": "6",
+      "when": 1724752296885,
+      "tag": "0000_brainy_absorbing_man",
+      "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "6",
+      "when": 1725902622269,
+      "tag": "0001_fixed_unus",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "6",
+      "when": 1726552847434,
+      "tag": "0002_curly_blonde_phantom",
+      "breakpoints": true
+    }
+  ]
+}

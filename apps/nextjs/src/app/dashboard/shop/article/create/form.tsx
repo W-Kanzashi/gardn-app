@@ -14,7 +14,6 @@ import { z } from "zod";
 
 import { nanoid } from "@acme/db/nanoid";
 import { cn } from "@acme/ui";
-import { Badge } from "@acme/ui/badge";
 import { Button } from "@acme/ui/button";
 import {
   Card,
@@ -27,7 +26,6 @@ import {
 import {
   Form,
   FormControl,
-  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -43,6 +41,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@acme/ui/select";
+import { Switch } from "@acme/ui/switch";
 import {
   Table,
   TableBody,
@@ -52,7 +51,8 @@ import {
   TableRow,
 } from "@acme/ui/table";
 import { Textarea } from "@acme/ui/textarea";
-import { ToggleGroup, ToggleGroupItem } from "@acme/ui/toggle-group";
+
+import type { ArticleCategory } from "./types";
 
 const formSchema = z.object({
   title: z
@@ -68,11 +68,11 @@ const formSchema = z.object({
     })
     .min(3, { message: "La description doit contenir au moins 3 caractères" }),
   price: z.string(),
-  sub_article: z.array(
+  option: z.array(
     z.object({
       option_id: z.string().nanoid(),
       name: z.string().min(1),
-      price: z.number(),
+      price: z.string(),
       stock: z.string(),
       available: z.boolean(),
     }),
@@ -83,10 +83,10 @@ const formSchema = z.object({
   stock: z.string(),
 });
 
-export function FormArticle() {
+export function FormArticle({ categories }: { categories: ArticleCategory[] }) {
   const router = useRouter();
 
-  const { mutateAsync: editArticle } = api.article.create.useMutation({
+  const { mutateAsync: createArticle } = api.article.create.useMutation({
     onSuccess: () => {
       toast("Article ajoutée avec succès");
       router.refresh();
@@ -101,17 +101,14 @@ export function FormArticle() {
 
   const optionFieldArray = useFieldArray({
     control: form.control,
-    name: "sub_article",
+    name: "option",
   });
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
-    console.log(values);
-    // await editArticle({
-    //   ...values,
-    // });
+    await createArticle({
+      ...values,
+    });
   }
-
-  console.log(form.watch());
 
   return (
     <Form {...form}>
@@ -130,7 +127,7 @@ export function FormArticle() {
                 </div>
                 <div className="grid gap-4 md:grid-cols-[1fr_250px] lg:grid-cols-3 lg:gap-8">
                   <div className="grid auto-rows-max items-start gap-4 lg:col-span-2 lg:gap-8">
-                    <Card x-chunk="dashboard-07-chunk-0">
+                    <Card>
                       <CardHeader>
                         <CardTitle>Article</CardTitle>
                         <CardDescription>
@@ -139,7 +136,7 @@ export function FormArticle() {
                       </CardHeader>
                       <CardContent>
                         <div className="grid gap-6">
-                          <div className="grid gap-3">
+                          <div className="grid grid-cols-2 gap-3">
                             <FormField
                               control={form.control}
                               name="title"
@@ -148,6 +145,30 @@ export function FormArticle() {
                                   <FormLabel>Titre</FormLabel>
                                   <FormControl>
                                     <Input placeholder="Pomme" {...field} />
+                                  </FormControl>
+                                  <FormMessage />
+                                </FormItem>
+                              )}
+                            />
+                            <FormField
+                              control={form.control}
+                              name="price"
+                              render={({ field }) => (
+                                <FormItem>
+                                  <FormLabel>Prix</FormLabel>
+                                  <FormControl>
+                                    <CurrencyInput
+                                      placeholder="0.00"
+                                      decimalsLimit={2}
+                                      lang="fr"
+                                      name={field.name}
+                                      min={0}
+                                      prefix="€"
+                                      className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50"
+                                      onValueChange={(value) =>
+                                        field.onChange(value)
+                                      }
+                                    />
                                   </FormControl>
                                   <FormMessage />
                                 </FormItem>
@@ -172,11 +193,12 @@ export function FormArticle() {
                         </div>
                       </CardContent>
                     </Card>
-                    <Card x-chunk="dashboard-07-chunk-1">
+                    <Card>
                       <CardHeader>
-                        <CardTitle>Stock</CardTitle>
+                        <CardTitle>Variantes</CardTitle>
                         <CardDescription>
-                          Lipsum dolor sit amet, consectetur adipiscing elit
+                          Vous pouvez ajouter plusieurs variantes pour votre
+                          article
                         </CardDescription>
                       </CardHeader>
                       <CardContent>
@@ -201,7 +223,7 @@ export function FormArticle() {
                                   <TableCell className="font-semibold">
                                     <FormField
                                       control={form.control}
-                                      name={`sub_article.${index}.name`}
+                                      name={`option.${index}.name`}
                                       render={({ field }) => (
                                         <FormItem>
                                           <FormLabel className="sr-only">
@@ -221,7 +243,7 @@ export function FormArticle() {
                                   <TableCell>
                                     <FormField
                                       control={form.control}
-                                      name={`sub_article.${index}.stock`}
+                                      name={`option.${index}.stock`}
                                       render={({ field }) => (
                                         <FormItem>
                                           <Label
@@ -244,7 +266,7 @@ export function FormArticle() {
                                   <TableCell>
                                     <FormField
                                       control={form.control}
-                                      name={`sub_article.${index}.price`}
+                                      name={`option.${index}.price`}
                                       render={({ field }) => (
                                         <FormItem>
                                           <Label className="sr-only">
@@ -306,7 +328,7 @@ export function FormArticle() {
                               option_id: nanoid(),
                               name: "",
                               stock: "0",
-                              price: 0,
+                              price: "0",
                               available: false,
                             })
                           }
@@ -316,72 +338,80 @@ export function FormArticle() {
                         </Button>
                       </CardFooter>
                     </Card>
-                    <Card x-chunk="dashboard-07-chunk-2">
+                    <Card>
                       <CardHeader>
-                        <CardTitle>Product Category</CardTitle>
+                        <CardTitle>Produit</CardTitle>
                       </CardHeader>
                       <CardContent>
                         <div className="grid gap-6 sm:grid-cols-3">
-                          <div className="grid gap-3">
-                            <FormField
-                              control={form.control}
-                              name="category_id"
-                              render={({ field }) => (
-                                <FormItem>
-                                  <Label htmlFor="category">Category</Label>
-                                  <FormControl>
-                                    <Select onValueChange={field.onChange}>
-                                      <SelectTrigger aria-label="Select category">
-                                        <SelectValue placeholder="Select category" />
-                                      </SelectTrigger>
-                                      <SelectContent>
-                                        <SelectItem value="tools">
-                                          Outils
+                          <FormField
+                            control={form.control}
+                            name="category_id"
+                            render={({ field }) => (
+                              <FormItem>
+                                <Label htmlFor="category">Category</Label>
+                                <FormControl>
+                                  <Select onValueChange={field.onChange}>
+                                    <SelectTrigger aria-label="Select category">
+                                      <SelectValue placeholder="Select category" />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                      {categories.map((category) => (
+                                        <SelectItem
+                                          key={category.id}
+                                          value={category.id}
+                                        >
+                                          {category.title}
                                         </SelectItem>
-                                        <SelectItem value="plants">
-                                          Plantes
-                                        </SelectItem>
-                                        <SelectItem value="seeds">
-                                          Graines
-                                        </SelectItem>
-                                      </SelectContent>
-                                    </Select>
-                                  </FormControl>
-                                  <FormMessage />
-                                </FormItem>
-                              )}
-                            />
-                          </div>
-                          <div className="grid gap-3">
-                            <Label htmlFor="subcategory">
-                              Subcategory (optional)
-                            </Label>
-                            <Select>
-                              <SelectTrigger
-                                id="subcategory"
-                                aria-label="Select subcategory"
-                              >
-                                <SelectValue placeholder="Select subcategory" />
-                              </SelectTrigger>
-                              <SelectContent>
-                                <SelectItem value="t-shirts">
-                                  T-Shirts
-                                </SelectItem>
-                                <SelectItem value="hoodies">Hoodies</SelectItem>
-                                <SelectItem value="sweatshirts">
-                                  Sweatshirts
-                                </SelectItem>
-                              </SelectContent>
-                            </Select>
-                          </div>
+                                      ))}
+                                    </SelectContent>
+                                  </Select>
+                                </FormControl>
+                                <FormMessage />
+                              </FormItem>
+                            )}
+                          />
+
+                          <FormField
+                            control={form.control}
+                            name="stock"
+                            render={({ field }) => (
+                              <FormItem>
+                                <Label>Stock</Label>
+                                <FormControl>
+                                  <Input placeholder="10" {...field} />
+                                </FormControl>
+                                <FormMessage />
+                              </FormItem>
+                            )}
+                          />
+
+                          <FormField
+                            control={form.control}
+                            name="active"
+                            render={({ field }) => (
+                              <FormItem>
+                                <Label>Stock</Label>
+                                <FormControl>
+                                  <Switch
+                                    checked={field.value}
+                                    onCheckedChange={(value) =>
+                                      field.onChange(value)
+                                    }
+                                  />
+                                </FormControl>
+                                <FormMessage />
+                              </FormItem>
+                            )}
+                          />
                         </div>
                       </CardContent>
                     </Card>
                   </div>
                   <div className="grid auto-rows-max items-start gap-4 lg:gap-8">
-                    <Card x-chunk="dashboard-07-chunk-3">
+                    <Card className="opacity-50">
                       <CardHeader>
-                        <CardTitle>Product Status</CardTitle>
+                        <CardTitle>Status de l&apos;article</CardTitle>
                       </CardHeader>
                       <CardContent>
                         <div className="grid gap-6">
@@ -391,6 +421,7 @@ export function FormArticle() {
                               <SelectTrigger
                                 id="status"
                                 aria-label="Select status"
+                                disabled
                               >
                                 <SelectValue placeholder="Select status" />
                               </SelectTrigger>
@@ -408,27 +439,46 @@ export function FormArticle() {
                         </div>
                       </CardContent>
                     </Card>
-                    <Card
-                      className="overflow-hidden"
-                      x-chunk="dashboard-07-chunk-4"
-                    >
+                    <Card className="overflow-hidden">
                       <CardHeader>
-                        <CardTitle>Product Images</CardTitle>
-                        <CardDescription>
-                          Lipsum dolor sit amet, consectetur adipiscing elit
-                        </CardDescription>
+                        <CardTitle>Image</CardTitle>
                       </CardHeader>
                       <CardContent>
                         <div className="grid gap-2">
-                          <Image
-                            alt="Product image"
-                            className="aspect-square w-full rounded-md object-cover"
-                            height="300"
-                            src="/placeholder.svg"
-                            width="300"
+                          <FormField
+                            control={form.control}
+                            name="image_url"
+                            render={({ field }) => (
+                              <FormItem>
+                                <FormLabel>Description</FormLabel>
+                                <FormControl>
+                                  <UploadButton
+                                    className="ut-button:bg-red-500 ut-button:ut-readying:bg-red-500/50 ut-button:px-4 mt-4 w-60"
+                                    endpoint="imageUploader"
+                                    onClientUploadComplete={(res) => {
+                                      const files = res as unknown as {
+                                        url: string;
+                                      }[];
+                                      if (
+                                        Array.isArray(files) &&
+                                        files.length > 0
+                                      ) {
+                                        for (const file of files) {
+                                          field.onChange(file.url);
+                                        }
+                                      }
+                                    }}
+                                    onUploadError={(error: Error) => {
+                                      console.log("Files: ", error);
+                                    }}
+                                  />
+                                </FormControl>
+                                <FormMessage />
+                              </FormItem>
+                            )}
                           />
                           <div className="grid grid-cols-3 gap-2">
-                            <button>
+                            <button disabled>
                               <Image
                                 alt="Product image"
                                 className="aspect-square w-full rounded-md object-cover"
@@ -437,7 +487,7 @@ export function FormArticle() {
                                 width="84"
                               />
                             </button>
-                            <button>
+                            <button disabled>
                               <Image
                                 alt="Product image"
                                 className="aspect-square w-full rounded-md object-cover"
@@ -452,20 +502,6 @@ export function FormArticle() {
                             </button>
                           </div>
                         </div>
-                      </CardContent>
-                    </Card>
-                    <Card x-chunk="dashboard-07-chunk-5">
-                      <CardHeader>
-                        <CardTitle>Archive Product</CardTitle>
-                        <CardDescription>
-                          Lipsum dolor sit amet, consectetur adipiscing elit.
-                        </CardDescription>
-                      </CardHeader>
-                      <CardContent>
-                        <div></div>
-                        <Button size="sm" variant="secondary">
-                          Archive Product
-                        </Button>
                       </CardContent>
                     </Card>
                   </div>

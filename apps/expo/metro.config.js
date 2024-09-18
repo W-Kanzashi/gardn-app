@@ -35,6 +35,8 @@ function withMonorepoPaths(config) {
     path.resolve(workspaceRoot, "node_modules"),
   ];
 
+  config.resolver.sourceExts.push("sql");
+
   return config;
 }
 

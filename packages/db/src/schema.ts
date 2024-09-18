@@ -10,9 +10,9 @@ import {
 
 import { nanoid } from "./nanoid";
 
-export const mySqlTable = sqliteTableCreator((name) => `gardn_${name}`);
+export const sqliteTable = sqliteTableCreator((name) => `gardn_${name}`);
 
-export const user = mySqlTable("user", {
+export const user = sqliteTable("user", {
   id: text("id")
     .primaryKey()
     .$defaultFn(() => nanoid()),
@@ -22,7 +22,13 @@ export const user = mySqlTable("user", {
   image: text("image"),
 });
 
-export const account = mySqlTable(
+export const user_relations = relations(user, ({ many }) => ({
+  sensors: many(sensor),
+  orders: many(order),
+  supports: many(support_user),
+}));
+
+export const account = sqliteTable(
   "account",
   {
     userId: text("userId")
@@ -46,7 +52,7 @@ export const account = mySqlTable(
   }),
 );
 
-export const session = mySqlTable("session", {
+export const session = sqliteTable("session", {
   sessionToken: text("sessionToken").primaryKey(),
   userId: text("userId")
     .notNull()
@@ -54,7 +60,7 @@ export const session = mySqlTable("session", {
   expires: integer("expires", { mode: "timestamp_ms" }).notNull(),
 });
 
-export const verificationToken = mySqlTable(
+export const verificationToken = sqliteTable(
   "verificationToken",
   {
     identifier: text("identifier").notNull(),
@@ -68,7 +74,7 @@ export const verificationToken = mySqlTable(
   }),
 );
 
-export const authenticator = mySqlTable(
+export const authenticator = sqliteTable(
   "authenticator",
   {
     credentialID: text("credentialID").notNull().unique(),
@@ -91,7 +97,7 @@ export const authenticator = mySqlTable(
   }),
 );
 
-export const plant = mySqlTable("plant", {
+export const plant = sqliteTable("plant", {
   id: text("id", { length: 21 })
     .primaryKey()
     .$defaultFn(() => nanoid()),
@@ -116,7 +122,7 @@ export const plant_relations = relations(plant, ({ one, many }) => ({
   }),
 }));
 
-export const plant_user = mySqlTable(
+export const plant_user = sqliteTable(
   "plant_user",
   {
     plant_id: text("plant_id", { length: 21 }).notNull(),
@@ -139,30 +145,34 @@ export const plant_user_relations = relations(plant_user, ({ one }) => ({
   }),
 }));
 
-export const plant_category = mySqlTable("plant_category", {
+export const plant_category = sqliteTable("plant_category", {
   id: text("id", { length: 21 })
     .primaryKey()
     .$defaultFn(() => nanoid()),
 });
 
-export const sensor = mySqlTable("sensor", {
+export const sensor = sqliteTable("sensor", {
   id: text("id", { length: 21 })
     .primaryKey()
     .$defaultFn(() => nanoid()),
   title: text("name", { length: 256 }).notNull(),
   sensor_id: text("sensor_id", { length: 21 }).notNull(),
+  user_id: text("user_id", { length: 21 }).notNull(),
   created_at: integer("created_at", { mode: "timestamp" })
     .default(sql`(unixepoch())`)
     .notNull(),
   updated_at: integer("updated_at", { mode: "timestamp" }),
 });
 
-export const sensor_relations = relations(sensor, ({ many }) => ({
-  users: many(yard_user),
+export const sensor_relations = relations(sensor, ({ one, many }) => ({
+  user: one(user, {
+    fields: [sensor.user_id],
+    references: [user.id],
+  }),
   yards: many(yard_sensor),
 }));
 
-export const yard_user = mySqlTable(
+export const yard_user = sqliteTable(
   "yard_user",
   {
     yard_id: text("yard_id", { length: 21 }).notNull(),
@@ -174,7 +184,7 @@ export const yard_user = mySqlTable(
   }),
 );
 
-export const order = mySqlTable("order", {
+export const order = sqliteTable("order", {
   id: text("id", { length: 21 })
     .primaryKey()
     .$defaultFn(() => nanoid()),
@@ -182,35 +192,28 @@ export const order = mySqlTable("order", {
   more_information: text("description", { length: 256 }).notNull(),
   price: integer("price").notNull(),
   canceled: integer("canceled", { mode: "boolean" }).default(false),
+  user_id: text("user_id", { length: 21 }).notNull(),
   created_at: integer("created_at", { mode: "timestamp" })
     .default(sql`(unixepoch())`)
     .notNull(),
   updated_at: integer("updated_at", { mode: "timestamp" }),
 });
 
-export const order_relations = relations(order, ({ many }) => ({
-  user: many(order_user),
+export const order_relations = relations(order, ({ one, many }) => ({
+  user: one(user, {
+    fields: [order.user_id],
+    references: [user.id],
+  }),
   article: many(order_article),
 }));
 
-export const order_user = mySqlTable(
-  "order_user",
-  {
-    order_id: text("order_id", { length: 21 }).notNull(),
-    user_id: text("user_id").notNull(),
-    favorite: integer("favorite", { mode: "boolean" }).default(false),
-  },
-  (table) => ({
-    pk: primaryKey({ columns: [table.order_id, table.user_id] }),
-  }),
-);
-
-export const order_article = mySqlTable(
+export const order_article = sqliteTable(
   "order_article",
   {
     order_id: text("order_id", { length: 21 }).notNull(),
     article_id: text("article_id", { length: 21 }).notNull(),
     quantity: integer("quantity").notNull(),
+    price: integer("price").notNull(),
   },
   (table) => ({
     pk: primaryKey({
@@ -231,7 +234,7 @@ export const order_article_relations = relations(order_article, ({ one }) => ({
 }));
 
 // Articles
-export const article = mySqlTable("article", {
+export const article = sqliteTable("article", {
   id: text("id", { length: 21 })
     .primaryKey()
     .$defaultFn(() => nanoid()),
@@ -264,7 +267,7 @@ export const article_relations = relations(article, ({ one }) => ({
   }),
 }));
 
-export const article_category = mySqlTable("category", {
+export const article_category = sqliteTable("category", {
   id: text("id", { length: 21 })
     .primaryKey()
     .$defaultFn(() => nanoid()),
@@ -281,7 +284,7 @@ export const category_relations = relations(article_category, ({ many }) => ({
 }));
 
 // Support for order
-export const support = mySqlTable("support", {
+export const support = sqliteTable("support", {
   id: text("id", { length: 21 })
     .primaryKey()
     .$defaultFn(() => nanoid()),
@@ -304,7 +307,7 @@ export const support = mySqlTable("support", {
   updated_at: integer("updated_at", { mode: "timestamp" }),
 });
 
-export const support_user = mySqlTable(
+export const support_user = sqliteTable(
   "support_user",
   {
     support_id: text("support_id", { length: 21 }).notNull(),
@@ -317,11 +320,18 @@ export const support_user = mySqlTable(
   }),
 );
 
-export const support_relations = relations(support, ({ many }) => ({
-  users: many(support_user),
+export const support_relations = relations(support_user, ({ one }) => ({
+  users: one(user, {
+    fields: [support_user.user_id],
+    references: [user.id],
+  }),
+  supports: one(support, {
+    fields: [support_user.support_id],
+    references: [support.id],
+  }),
 }));
 
-export const yard = mySqlTable("yard", {
+export const yard = sqliteTable("yard", {
   id: text("id", { length: 21 })
     .primaryKey()
     .$defaultFn(() => nanoid()),
@@ -341,7 +351,7 @@ export const yard_relations = relations(yard, ({ many }) => ({
   sensors: many(yard_sensor),
 }));
 
-export const yard_sensor = mySqlTable(
+export const yard_sensor = sqliteTable(
   "yard_sensor",
   {
     yard_id: text("yard_id", { length: 21 }).notNull(),
@@ -363,7 +373,7 @@ export const yard_sensor_relations = relations(yard_sensor, ({ one }) => ({
   }),
 }));
 
-export const yard_plant = mySqlTable(
+export const yard_plant = sqliteTable(
   "yard_user",
   {
     yard_id: text("yard_id", { length: 21 }).notNull(),
@@ -385,3 +395,18 @@ export const yard_plant_relations = relations(yard_plant, ({ one }) => ({
     references: [plant.id],
   }),
 }));
+
+// Expo UI
+export const ui = sqliteTable("ui", {
+  id: text("id", { length: 21 })
+    .primaryKey()
+    .$defaultFn(() => nanoid()),
+  page: text("page", { length: 256 }).notNull(),
+  ui: text("ui", { mode: "json" }).notNull(),
+  type: text("type", { enum: ["layout", "page"] }).notNull(),
+  etag: text("etag", { length: 21 }).notNull(),
+  created_at: integer("created_at", { mode: "timestamp" })
+    .default(sql`(unixepoch())`)
+    .notNull(),
+  updated_at: integer("updated_at", { mode: "timestamp" }),
+});

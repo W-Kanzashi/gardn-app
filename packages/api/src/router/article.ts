@@ -22,7 +22,7 @@ export const articleRouter = createTRPCRouter({
         category_id: z.string().nanoid(),
         option: z.array(
           z.object({
-            id: z.string().nanoid(),
+            option_id: z.string().nanoid(),
             name: z.string(),
             available: z.boolean(),
             price: z.string().transform((price) => parseFloat(price) * 100),
@@ -43,7 +43,7 @@ export const articleRouter = createTRPCRouter({
           stock: input.stock,
           category_id: input.category_id,
           option: input.option.map((option) => ({
-            option_id: option.id,
+            option_id: option.option_id,
             name: option.name,
             available: option.available,
             price: option.price,

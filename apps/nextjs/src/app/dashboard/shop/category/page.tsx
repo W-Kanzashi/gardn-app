@@ -1,6 +1,8 @@
+import Link from "next/link";
 import { z } from "zod";
 
 import { db } from "@acme/db";
+import { Button } from "@acme/ui/button";
 
 import { columns } from "./_components/columns";
 import { DataTable } from "./_components/data-table";
@@ -16,7 +18,10 @@ export default async function Page() {
   }
 
   return (
-    <div className="container mx-auto py-10">
+    <div className="col-span-2">
+      <Button size="sm" variant="outline" asChild>
+        <Link href="/dashboard/shop">Retour</Link>
+      </Button>
       <DataTable columns={columns} data={validatedData.data} />
     </div>
   );

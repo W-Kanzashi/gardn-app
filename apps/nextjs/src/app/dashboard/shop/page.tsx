@@ -49,17 +49,18 @@ export default async function Component() {
             <DropdownMenuContent align="end">
               <DropdownMenuLabel>Articles</DropdownMenuLabel>
               <DropdownMenuSeparator />
-              <DropdownMenuItem>
+              <DropdownMenuItem asChild>
                 <Link href="/dashboard/shop/article/create">Créer</Link>
               </DropdownMenuItem>
               <DropdownMenuLabel>Catégories</DropdownMenuLabel>
               <DropdownMenuSeparator />
-              <DropdownMenuItem>
-                <Link href="/dashboard/shop/category/create">Créer</Link>
+              <DropdownMenuItem asChild>
+                <Link href="/dashboard/shop/category">Créer</Link>
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
         </div>
+
         <DataTable columns={columns} data={validatedArticles.data ?? []} />
       </main>
     </div>

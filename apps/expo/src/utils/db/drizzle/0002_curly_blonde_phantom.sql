@@ -1,0 +1,1 @@
+ALTER TABLE `ui` ADD `stack` text;

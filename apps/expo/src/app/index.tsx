@@ -1,73 +1,109 @@
-import { Pressable, Text, View } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
-import { Link, Stack } from "expo-router";
-import { FlashList } from "@shopify/flash-list";
+import React, { useEffect } from "react";
+import { SafeAreaView } from "react-native";
+import { Stack } from "expo-router";
+import { useQuery } from "@tanstack/react-query";
+import { eq } from "drizzle-orm";
 
-import type { RouterOutputs } from "~/utils/api";
+import { Pressable } from "~/components/button";
+import { renderComponent } from "~/components/render";
+import { Text } from "~/components/text";
 import { api } from "~/utils/api";
-
-function PostCard(props: {
-  post: RouterOutputs["plant"]["list"][number];
-}) {
-  return (
-    <View className="flex flex-row rounded-lg bg-muted p-4">
-      <View className="flex-grow">
-        <Link
-          asChild
-          href={{
-            pathname: "/post/[id]",
-            params: { id: props.post.id },
-          }}
-        >
-          <Pressable className="">
-            <Text className=" text-xl font-semibold text-primary">
-              {props.post.title}
-            </Text>
-            <Text className="mt-2 text-foreground">{props.post.title}</Text>
-          </Pressable>
-        </Link>
-      </View>
-    </View>
-  );
-}
+import { db } from "~/utils/db";
+import { ui } from "~/utils/db/schema";
 
 export default function Index() {
-  const postQuery = api.plant.list.useQuery();
+  const utils = api.useUtils();
+  const { data } = useQuery({
+    queryKey: ["home"],
+    queryFn: async () => {
+      const data = await db.query.ui.findFirst({
+        where: eq(ui.page, "[id]"),
+      });
 
-  console.log(postQuery);
+      if (!data) {
+        return null;
+      }
+
+      console.log("query", data);
+
+      return data;
+    },
+    staleTime: Infinity,
+  });
+
+  const { data: uiServer } = api.expo.getByPage.useQuery(
+    {
+      page: "[id]",
+      type: "page",
+      etag: data?.etag,
+    },
+    {
+      staleTime: 1000 * 60 * 60 * 24,
+      networkMode: "online",
+    },
+  );
+
+  useEffect(() => {
+    async function getUi() {
+      if (!uiServer) {
+        console.log("Server data is null");
+        return;
+      }
+
+      try {
+        await db
+          .insert(ui)
+          .values({
+            id: uiServer.id,
+            page: "[id]",
+            ui: uiServer.ui.ui,
+            stavck: uiServer.ui.stack,
+            etag: uiServer.etag,
+          })
+          .onConflictDoUpdate({
+            set: {
+              ui: uiServer.ui,
+              etag: uiServer.etag,
+            },
+            target: ui.id,
+          });
+
+        await utils.expo.getByPage.invalidate(undefined, {
+          queryKey: ["home"],
+        });
+        console.log("Insert new data");
+      } catch (error) {
+        console.error(error);
+      }
+    }
+
+    getUi().catch((error) => {
+      console.error(error);
+    });
+  });
+
+  if (!data) return null;
+
+  console.log("data", data, "uiServer", uiServer);
 
   return (
-    <SafeAreaView className=" bg-background">
-      {/* Changes page title visible on the header */}
-      <Stack.Screen options={{ title: "Home Page" }} />
-      <View className="h-full w-full bg-background p-4">
-        <Text className="pb-2 text-center text-5xl font-bold text-foreground">
-          Create <Text className="text-primary">T3</Text> Turbo
-        </Text>
-
-        <Pressable
-          className="flex items-center rounded-lg bg-primary p-2"
-        >
-          <Text className="text-foreground"> Refresh posts</Text>
-        </Pressable>
-
-        <View className="py-2">
-          <Text className="font-semibold italic text-primary">
-            Press on a post
-          </Text>
-        </View>
-
-        <FlashList
-          data={postQuery.data}
-          estimatedItemSize={20}
-          ItemSeparatorComponent={() => <View className="h-2" />}
-          renderItem={(p) => (
-            <PostCard
-              post={p.item}
-            />
-          )}
-        />
-      </View>
+    <SafeAreaView className="bg-background">
+      <Stack.Screen
+        options={{
+          title: data.ui.title,
+          headerLeft: () => (
+            <Pressable>
+              <Text>Retour</Text>
+            </Pressable>
+          ),
+          headerRight: () => (
+            <Pressable>
+              <Text>Settings</Text>
+            </Pressable>
+          ),
+        }}
+      />
+      {renderComponent(data.ui)}
     </SafeAreaView>
   );
 }

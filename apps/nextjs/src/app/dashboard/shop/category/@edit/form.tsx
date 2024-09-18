@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { api } from "@/trpc/react";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -8,13 +9,7 @@ import { toast } from "sonner";
 import { z } from "zod";
 
 import { Button } from "@acme/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@acme/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@acme/ui/card";
 import {
   Form,
   FormControl,
@@ -25,6 +20,8 @@ import {
 } from "@acme/ui/form";
 import { Input } from "@acme/ui/input";
 import { Textarea } from "@acme/ui/textarea";
+
+import { refreshPage } from "../_utils/action";
 
 const formSchema = z.object({
   title: z
@@ -46,12 +43,13 @@ export function FormCategory() {
 
   const { mutateAsync: createCategories } =
     api.article.create_categories.useMutation({
-      onSuccess: () => {
-        toast("Article ajoutée avec succès");
+      onSuccess: async () => {
+        toast("Catégorie ajoutée avec succès");
         router.refresh();
+        await refreshPage({ route: "/dashboard/shop/category" });
       },
       onError: () => {
-        toast("Erreur lors de l'ajout de la article");
+        toast("Erreur lors de l'ajout de la catégorie");
       },
     });
   const form = useForm<z.infer<typeof formSchema>>({
@@ -59,25 +57,26 @@ export function FormCategory() {
   });
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
-    console.log(values);
-    // await editArticle({
-    //   ...values,
-    // });
+    await createCategories({
+      ...values,
+    });
   }
-
-  console.log(form.watch());
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)}>
-        <Button type="submit" variant="outline" size="sm">
-          Discard
-        </Button>
-        <Button size="sm">Save Product</Button>
+      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+        <div className="flex items-center gap-4">
+          <Button type="button" variant="outline" size="sm" asChild>
+            <Link href="/dashboard/shop/category"> Annuler</Link>
+          </Button>
+          <Button type="submit" size="sm">
+            Ajouter
+          </Button>
+        </div>
+
         <Card x-chunk="dashboard-07-chunk-0">
           <CardHeader>
-            <CardTitle>Article</CardTitle>
-            <CardDescription>Détails de l&apos;article</CardDescription>
+            <CardTitle>Catégorie</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="grid gap-6">
@@ -87,7 +86,7 @@ export function FormCategory() {
                   name="title"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Titre</FormLabel>
+                      <FormLabel>Nom</FormLabel>
                       <FormControl>
                         <Input placeholder="Pomme" {...field} />
                       </FormControl>
@@ -114,12 +113,6 @@ export function FormCategory() {
             </div>
           </CardContent>
         </Card>
-        <div className="flex items-center justify-center gap-2 md:hidden">
-          <Button variant="outline" size="sm">
-            Discard
-          </Button>
-          <Button size="sm">Save Product</Button>
-        </div>
       </form>
     </Form>
   );

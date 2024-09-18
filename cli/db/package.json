@@ -1,0 +1,6 @@
+{
+  "name": "@acme/turso-cli",
+  "scripts": {
+    "dev": "turso dev --db-file local.db"
+  }
+}
