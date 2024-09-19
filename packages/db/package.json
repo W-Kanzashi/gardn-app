@@ -31,9 +31,9 @@
     "with-env": "dotenv -e ../../.env --"
   },
   "dependencies": {
-    "@libsql/client": "^0.10.0",
+    "@libsql/client": "^0.12.0",
     "@t3-oss/env-core": "^0.11.1",
-    "better-sqlite3": "^11.2.1",
+    "better-sqlite3": "^11.3.0",
     "drizzle-orm": "^0.33.0",
     "drizzle-zod": "^0.5.1",
     "nanoid": "^5.0.7",
