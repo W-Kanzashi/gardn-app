@@ -11,6 +11,7 @@ import * as SQLite from "expo-sqlite";
 import { useMigrations } from "drizzle-orm/expo-sqlite/migrator";
 import { useColorScheme } from "nativewind";
 
+import { NavBar } from "~/components/navbar";
 import { db } from "~/utils/db";
 import migrations from "~/utils/db/drizzle/migrations";
 
@@ -57,6 +58,7 @@ export default function RootLayout() {
           },
         }}
       />
+      <NavBar />
       <StatusBar />
     </TRPCProvider>
   );

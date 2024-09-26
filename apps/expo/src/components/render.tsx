@@ -1,5 +1,14 @@
-import type { PressableProps, TextStyle, ViewStyle } from "react-native";
+import type { ImageStyle } from "expo-image";
+import type { Href } from "expo-router";
+import type {
+  PressableProps,
+  StyleProp,
+  TextStyle,
+  ViewStyle,
+} from "react-native";
 import React from "react";
+import { ScrollView } from "react-native";
+import { Image } from "expo-image";
 import { Link } from "expo-router";
 
 import { Pressable } from "./button";
@@ -7,12 +16,29 @@ import { Text } from "./text";
 import { View } from "./view";
 
 const componentMap = {
-  view: (props) => <View {...props}>{props.children}</View>,
-  text: (props) => <Text {...props}>{props.text}</Text>,
-  button: (props) => {
+  view: (props: { children: React.ReactNode; style?: ViewStyle }) => {
+    return <View {...props}>{props.children}</View>;
+  },
+  text: (props: { text: string; style?: TextStyle }) => (
+    <Text {...props}>{props.text}</Text>
+  ),
+  button: (props: {
+    children: React.ReactNode;
+    eventHandlers?: Record<
+      Extract<keyof PressableProps, `on${string}`>,
+      string
+    >;
+    style?: ViewStyle;
+  }) => {
     // Handler all `on${string}` events
-    for (const [key, value] of Object.entries(props.eventHandlers)) {
-      props.eventHandlers[key] = eval(value);
+    if (props.eventHandlers) {
+      for (const [key, value] of Object.entries(props.eventHandlers) as [
+        Extract<keyof PressableProps, `on${string}`>,
+        string,
+      ][]) {
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+        props.eventHandlers[key] = eval(value);
+      }
     }
 
     return (
@@ -21,8 +47,32 @@ const componentMap = {
       </Pressable>
     );
   },
-  link: (props) => <Link {...props}>{props.children}</Link>,
-  icon: (props) => <View {...props}>{props.children}</View>,
+  link: (props: { href: Href<string>; children: React.ReactNode }) => {
+    return (
+      <Link {...props} asChild>
+        {props.children}
+      </Link>
+    );
+  },
+  scrollview: (props: {
+    children: React.ReactNode;
+    className?: string;
+    style?: ViewStyle;
+  }) => <ScrollView {...props}>{props.children}</ScrollView>,
+  image: (props: {
+    url: string;
+    style?: StyleProp<ImageStyle>;
+    placeholder?: string;
+  }) => {
+    return (
+      <Image
+        source={props.url}
+        style={props.style}
+        alt="image"
+        contentFit="cover"
+      />
+    );
+  },
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
 } satisfies Record<string, React.FC<any>>;
 
@@ -30,11 +80,15 @@ export type Components = Exclude<keyof typeof componentMap, "icon">;
 
 export type ComponentType<T extends Components> =
   | {
-      key: "root";
-      title: string;
+      key: string;
+      type: "scrollview";
+      style?: ViewStyle;
+      children: ComponentType<"text">[];
+    }
+  | {
+      key: string;
       type: "view";
       style?: ViewStyle;
-      props?: Exclude<React.ElementRef<Components>, "style">;
       children: ComponentType<T>[];
     }
   | {
@@ -46,7 +100,6 @@ export type ComponentType<T extends Components> =
   | {
       key: string;
       type: "view";
-      props?: Exclude<React.ElementRef<Components>, "style">;
       style?: ViewStyle;
       children?: ComponentType<T>[];
     }
@@ -57,7 +110,6 @@ export type ComponentType<T extends Components> =
         Record<Extract<keyof PressableProps, `on${string}`>, string>
       >;
       style?: ViewStyle;
-      props?: Exclude<React.ElementRef<Components>, "style">;
       children: ComponentType<"text">[];
     }
   | {
@@ -65,15 +117,13 @@ export type ComponentType<T extends Components> =
       type: "link";
       href: string;
       style?: ViewStyle;
-      props?: Exclude<React.ElementRef<Components>, "style">;
-      children: ComponentType<"text">[];
+      children: ComponentType<"button">;
     }
   | {
       key: string;
-      type: "icon";
-      icon: React.ReactNode;
+      type: "image";
+      url: string;
       style?: ViewStyle;
-      props?: Exclude<React.ElementRef<Components>, "style">;
     };
 
 export function renderComponent<T extends Components>(
@@ -83,6 +133,15 @@ export function renderComponent<T extends Components>(
   const Component = componentMap[component.type];
 
   switch (component.type) {
+    case "scrollview": {
+      const children = component.children.map(renderComponent);
+
+      return (
+        <Component key={component.key} style={component.style}>
+          {children}
+        </Component>
+      );
+    }
     case "view": {
       const children = component.children
         ? component.children.map(renderComponent)
@@ -91,8 +150,8 @@ export function renderComponent<T extends Components>(
       return (
         <Component
           key={component.key}
-          {...component.props}
           style={component.style}
+          className={component.className}
         >
           {children}
         </Component>
@@ -104,6 +163,7 @@ export function renderComponent<T extends Components>(
           key={component.key}
           style={component.style}
           text={component.text}
+          className={component.className}
         />
       );
     }
@@ -112,39 +172,37 @@ export function renderComponent<T extends Components>(
         <Component
           key={component.key}
           eventHandlers={component.eventHandlers}
-          {...component.props}
           style={component.style}
+          className={component.className}
         >
           {component.children.map(renderComponent)}
         </Component>
       );
     }
     case "link": {
-      console.log("link", component);
       return (
         <Component
           key={component.key}
-          {...component.props}
           style={component.style}
           href={component.href}
+          className={component.className}
         >
-          {component.children.map(renderComponent)}
+          {renderComponent(component.children)}
         </Component>
       );
     }
-    case "icon": {
+    case "image": {
       return (
         <Component
           key={component.key}
-          {...component.props}
           style={component.style}
-        >
-          {component.icon}
-        </Component>
+          url={component.url}
+          placeholder={component.placeholder}
+        />
       );
     }
     default: {
-      console.error("Invalid component type");
+      console.error("Invalid component type", component);
       return null;
     }
   }

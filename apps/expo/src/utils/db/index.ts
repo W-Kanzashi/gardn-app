@@ -5,4 +5,4 @@ import * as schema from "./schema";
 
 const expo = openDatabaseSync("gardn.db", { enableChangeListener: true });
 
-export const db = drizzle(expo, { schema });
+export const db = drizzle(expo, { schema, logger: true });

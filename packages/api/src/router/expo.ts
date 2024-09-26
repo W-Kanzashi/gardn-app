@@ -4,7 +4,11 @@ import { z } from "zod";
 import { and, eq } from "@acme/db";
 import * as schema from "@acme/db/schema";
 
-import { createTRPCRouter, protectedProcedure, publicProcedure } from "../trpc";
+import { createTRPCRouter, publicProcedure } from "../trpc";
+import { ui } from "./_utils/ui";
+import { navBar } from "./_utils/ui/nav-bar";
+import { plant_1 } from "./_utils/ui/plant/id";
+import { shop } from "./_utils/ui/shop";
 
 export const expoRouter = createTRPCRouter({
   getByPage: publicProcedure
@@ -22,200 +26,58 @@ export const expoRouter = createTRPCRouter({
       // If it isn't, return the new ui
 
       try {
-        const pageData = await ctx.db.query.ui.findFirst({
-          where: and(
-            eq(schema.ui.type, input.type),
-            eq(schema.ui.page, input.page),
-          ),
-          columns: {
-            id: true,
-            etag: true,
-            ui: true,
-            type: true,
-            updated_at: true,
-          },
-        });
+        // const pageData = await ctx.db.query.ui.findFirst({
+        //   where: and(
+        //     eq(schema.ui.type, input.type),
+        //     eq(schema.ui.page, input.page),
+        //   ),
+        //   columns: {
+        //     id: true,
+        //     etag: true,
+        //     ui: true,
+        //     type: true,
+        //     updated_at: true,
+        //   },
+        // });
 
-        const ui = {
-          stack: {},
-          ui: {
-            key: "root",
-            title: "Tomates",
-            type: "view",
-            style: {
-              backgroundColor: "#f0f0f0",
-              height: "100%",
-            },
-            children: [
-              {
-                key: "header",
-                type: "view",
-                style: {
-                  flexDirection: "row",
-                  alignItems: "center",
-                  justifyContent: "space-between",
-                  gap: 8,
-                  borderBottomWidth: 1,
-                  borderColor: "#ccc",
-                  paddingVertical: 8,
-                  paddingHorizontal: 10,
-                },
-                children: [
-                  {
-                    key: "header-back-button",
-                    type: "button",
-                    style: {
-                      alignItems: "center",
-                      justifyContent: "center",
-                    },
-                    eventHandlers: {
-                      onPress: () => alert("Back Button clicked"),
-                    },
-                    props: undefined,
-                    children: [
-                      {
-                        key: "header-back-button-icon",
-                        type: "view",
-                        style: {
-                          width: 24,
-                          height: 24,
-                          marginLeft: 8,
-                        },
-                        children: [
-                          {
-                            key: "header-back-button-icon-image",
-                            type: "text",
-                            content: "Home page",
-                            style: {
-                              width: 24,
-                              height: 24,
-                            },
-                          },
-                        ],
-                      },
-                    ],
-                  },
-                  {
-                    key: "header-title",
-                    type: "text",
-                    text: "Home page",
-                    style: {
-                      fontSize: 24,
-                      color: "#000",
-                    },
-                  },
-                  {
-                    key: "header-button",
-                    type: "button",
-                    style: {
-                      alignItems: "center",
-                      justifyContent: "center",
-                      paddingHorizontal: 16,
-                      paddingVertical: 8,
-                      borderRadius: 4,
-                      backgroundColor: "black",
-                    },
-                    eventHandlers: {
-                      onPress: "() => console.log('Nav Button clicked')",
-                    },
-                    props: undefined,
-                    children: [
-                      {
-                        key: "header-button-text",
-                        type: "text",
-                        text: "Settings",
-                        style: {
-                          fontSize: 16,
-                          lineHeight: 21,
-                          fontWeight: "bold",
-                          letterSpacing: 0.25,
-                          color: "white",
-                        },
-                      },
-                    ],
-                  },
-                ],
-              },
-              {
-                key: "content",
-                type: "view",
-                style: {
-                  flex: 1,
-                  justifyContent: "center",
-                  alignItems: "center",
-                  gap: 8,
-                },
-                children: [
-                  {
-                    key: "title",
-                    type: "text",
-                    text: "Welcome to the App!",
-                    style: {
-                      fontSize: 24,
-                      color: "#000",
-                    },
-                  },
-                  {
-                    key: "button",
-                    type: "button",
-                    style: {
-                      alignItems: "center",
-                      justifyContent: "center",
-                      paddingHorizontal: 16,
-                      paddingVertical: 8,
-                      borderRadius: 4,
-                      backgroundColor: "black",
-                    },
-                    eventHandlers: {
-                      onPress: "() => console.log('Button clicked')",
-                    },
-                    props: undefined,
-                    children: [
-                      {
-                        key: "link-shop",
-                        type: "link",
-                        href: "/protected/shop",
-                        children: [
-                          {
-                            key: "link-shop-text",
-                            type: "text",
-                            text: "Shop",
-                            style: {
-                              fontSize: 16,
-                              lineHeight: 21,
-                              fontWeight: "bold",
-                              letterSpacing: 0.25,
-                              color: "white",
-                            },
-                          },
-                        ],
-                      },
-                    ],
-                  },
-                ],
-              },
-            ],
-          },
-        };
+        // if (!pageData) {
+        // await ctx.db.insert(schema.ui).values({
+        //   type: "page",
+        //   ui: ui,
+        //   page: "[id]",
+        //   etag: "12902128391730",
+        // });
+        //   throw new TRPCError({
+        //     code: "INTERNAL_SERVER_ERROR",
+        //     message: "This page does not exist",
+        //   });
+        // }
 
-        if (!pageData) {
-          await ctx.db.insert(schema.ui).values({
-            type: "page",
-            ui: ui,
-            page: "[id]",
-            etag: "12902128391730",
-          });
-          throw new TRPCError({
-            code: "INTERNAL_SERVER_ERROR",
-            message: "This page does not exist",
-          });
+        // if (input.etag !== pageData.etag) {
+        //   return pageData;
+        // }
+
+        if (input.type === "layout") {
+          return navBar;
         }
 
-        console.log("Return new page data", typeof pageData.ui);
+        if (input.page === "index") {
+          return ui;
+        }
 
-        if (input.etag !== pageData.etag) {
-          console.log("Return new page data");
-          return pageData;
+        if (input.page === "shop") {
+          return shop;
+        }
+
+        const page = JSON.parse(input.page) as unknown;
+
+        if (Array.isArray(page)) {
+          switch (page[1]) {
+            case "1": {
+              console.log("input.page", input.page);
+              return plant_1;
+            }
+          }
         }
 
         return null;

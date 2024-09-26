@@ -16,7 +16,6 @@
     "*.js",
     ".expo/types/**/*.ts",
     "expo-env.d.ts",
-    "eslint.config.mjs",
     "eslint.config.mjs"
   ],
   "exclude": ["node_modules"]
