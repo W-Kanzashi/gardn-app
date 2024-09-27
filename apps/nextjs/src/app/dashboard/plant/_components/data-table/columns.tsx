@@ -45,13 +45,13 @@ export const columns: ColumnDef<Plant>[] = [
         DUc2SUOne7PIYlmVnKTTW: { label: "Fruit" },
         hx5Q6GiHKTPjWsQHny0TY: { label: "Légume" },
         xbJZBsROKPSCB1qcyrbdy: { label: "Fleur" },
-      } as const;
+      };
 
       return (
         <div>
           {
             categories[row.original.category_id as keyof typeof categories]
-              ?.label
+              .label
           }
         </div>
       );

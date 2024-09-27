@@ -22,7 +22,7 @@ import {
 } from "@acme/ui/dropdown-menu";
 import { Input } from "@acme/ui/input";
 
-export default async function Component() {
+export default async function Page() {
   const session = await auth();
 
   if (!session) {

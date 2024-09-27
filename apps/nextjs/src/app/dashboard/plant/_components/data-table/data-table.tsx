@@ -48,7 +48,8 @@ export function DataTable<TData, TValue>({
       <div className="flex items-center py-4">
         <Input
           placeholder="Filter par nom..."
-          value={(table.getColumn("Nom")?.getFilterValue() as string) ?? ""}
+          value={table.getColumn("Nom")?.getFilterValue() as string}
+          defaultValue=""
           onChange={(event) =>
             table.getColumn("Nom")?.setFilterValue(event.target.value)
           }
@@ -76,6 +77,7 @@ export function DataTable<TData, TValue>({
             ))}
           </TableHeader>
           <TableBody>
+            {/* eslint-disable-next-line @typescript-eslint/no-unnecessary-condition */}
             {table.getRowModel().rows?.length ? (
               table.getRowModel().rows.map((row) => (
                 <TableRow

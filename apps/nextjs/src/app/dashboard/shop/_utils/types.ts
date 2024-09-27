@@ -1,10 +1,10 @@
 import { z } from "zod";
 
 const articleSchema = z.object({
-  id: z.string(),
-  title: z.string(),
+  id: z.string().nanoid(),
+  name: z.string(),
   description: z.string(),
-  image_url: z.string(),
+  image_url: z.string().nullish(),
   stock: z.number(),
   price: z.number(),
   active: z.boolean(),

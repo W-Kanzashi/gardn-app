@@ -1,10 +1,9 @@
 import type { Metadata, Viewport } from "next";
+import { env } from "@/env";
 import { GeistMono } from "geist/font/mono";
 import { GeistSans } from "geist/font/sans";
 
 import { cn } from "@acme/ui";
-
-import { env } from "@/env";
 
 import "@/app/globals.css";
 
@@ -35,6 +34,8 @@ export const viewport: Viewport = {
     { media: "(prefers-color-scheme: dark)", color: "black" },
   ],
 };
+
+export const dynamic = "force-dynamic";
 
 export default function RootLayout(props: { children: React.ReactNode }) {
   return (

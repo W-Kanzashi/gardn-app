@@ -23,10 +23,10 @@ export const columns: ColumnDef<Article>[] = [
   },
   {
     id: "Nom",
-    accessorKey: "title",
+    accessorKey: "name",
     header: ({ column }) => <div>{column.id}</div>,
     cell: ({ row }) => {
-      return <div className="capitalize">{row.original.title}</div>;
+      return <div className="capitalize">{row.original.name}</div>;
     },
   },
   {
@@ -59,8 +59,11 @@ export const columns: ColumnDef<Article>[] = [
       return (
         <div className="relative h-10 w-10 overflow-hidden">
           <Image
-            src={row.original.image_url}
-            alt={`Image de ${row.original.title}`}
+            src={
+              row.original.image_url ??
+              "https://utfs.io/f/6a973de1-dab6-4ebe-ba9c-a07f4e27573b-ifo2lm.jpg"
+            }
+            alt={`Image de ${row.original.name}`}
             width={100}
             height={100}
             className="aspect-auto h-full object-contain"

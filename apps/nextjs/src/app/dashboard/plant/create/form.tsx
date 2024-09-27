@@ -33,6 +33,7 @@ import { Popover, PopoverContent, PopoverTrigger } from "@acme/ui/popover";
 import { Textarea } from "@acme/ui/textarea";
 
 import { categories } from "../_utils/categories";
+import { revalidatePath } from "../../_utils/action";
 
 const formSchema = z.object({
   title: z
@@ -48,16 +49,18 @@ const formSchema = z.object({
     })
     .min(3, { message: "La description doit contenir au moins 3 caractères" }),
   category: z.string().nanoid(),
-  image_url: z.string(),
+  image_url: z.string().nullish(),
 });
 
 export function FormPlant() {
   const router = useRouter();
 
   const { mutateAsync: editPlant } = api.plant.create.useMutation({
-    onSuccess: () => {
+    onSuccess: async () => {
       toast("Plante ajoutée avec succès");
-      router.refresh();
+      await revalidatePath("/dashboard/plant");
+
+      router.push("/dashboard/plant");
     },
     onError: () => {
       toast("Erreur lors de l'ajout de la plante");
@@ -77,7 +80,7 @@ export function FormPlant() {
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
         <div className="space-y-4">
-          <div className="grid grid-cols-2 gap-4">
+          <div className="flex flex-col gap-4">
             <FormField
               control={form.control}
               name="title"
@@ -115,7 +118,7 @@ export function FormPlant() {
             control={form.control}
             name="category"
             render={({ field }) => (
-              <FormItem className="flex flex-col">
+              <FormItem className="flex flex-col gap-2">
                 <FormLabel>Categorie</FormLabel>
                 <Popover>
                   <PopoverTrigger asChild>
@@ -124,7 +127,7 @@ export function FormPlant() {
                         variant="outline"
                         role="combobox"
                         className={cn(
-                          "w-[200px] justify-between",
+                          "w-full justify-between",
                           !field.value && "text-muted-foreground",
                         )}
                       >
@@ -137,7 +140,7 @@ export function FormPlant() {
                       </Button>
                     </FormControl>
                   </PopoverTrigger>
-                  <PopoverContent className="w-[200px] p-0">
+                  <PopoverContent className="w-full p-0">
                     <Command>
                       <CommandList>
                         <CommandInput placeholder="Search category..." />
@@ -180,10 +183,11 @@ export function FormPlant() {
                 <FormLabel>Description</FormLabel>
                 <FormControl>
                   <UploadButton
-                    className="ut-button:bg-red-500 ut-button:ut-readying:bg-red-500/50 ut-button:px-4 mt-4 w-60"
+                    className="ut-button:bg-red-500 ut-button:ut-readying:bg-red-500/50 w-full"
                     endpoint="imageUploader"
                     onClientUploadComplete={(res) => {
                       const files = res as unknown as { url: string }[];
+
                       if (Array.isArray(files) && files.length > 0) {
                         for (const file of files) {
                           field.onChange(file.url);
@@ -200,7 +204,10 @@ export function FormPlant() {
             )}
           />
         </div>
-        <Button type="submit">Valider</Button>
+
+        <div className="self-end">
+          <Button type="submit">Valider</Button>
+        </div>
       </form>
     </Form>
   );

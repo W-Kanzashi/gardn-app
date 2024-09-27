@@ -33,7 +33,7 @@ export const plantRouter = createTRPCRouter({
         title: z.string(),
         description: z.string(),
         category: z.string(),
-        image_url: z.string(),
+        image_url: z.string().nullish(),
       }),
     )
     .mutation(({ ctx, input }) => {
@@ -41,7 +41,7 @@ export const plantRouter = createTRPCRouter({
         title: input.title,
         description: input.description,
         category_id: input.category,
-        image_url: input.image_url,
+        image_url: input.image_url ?? "",
       });
     }),
 

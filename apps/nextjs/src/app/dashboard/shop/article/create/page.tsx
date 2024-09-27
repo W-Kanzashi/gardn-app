@@ -2,8 +2,8 @@ import { z } from "zod";
 
 import { db } from "@acme/db";
 
+import { articleCategorySchema } from "../_utils/types";
 import { FormArticle } from "./form";
-import { articleCategorySchema } from "./types";
 
 async function getArticlesVariants() {
   const articlesVariantsData = await db.query.article.findMany({

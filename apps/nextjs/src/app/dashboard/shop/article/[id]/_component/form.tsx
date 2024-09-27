@@ -1,7 +1,7 @@
 "use client";
 
-import { useState } from "react";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 import { api } from "@/trpc/react";
 import { UploadButton } from "@/utils/uploadthing";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -52,11 +52,11 @@ import {
 } from "@acme/ui/table";
 import { Textarea } from "@acme/ui/textarea";
 
-import type { Article, Category } from "../_utils/types";
+import type { Article, ArticleCategory } from "../../_utils/types";
 
 const formSchema = z.object({
   id: z.string().nanoid(),
-  title: z
+  name: z
     .string({
       required_error: "Veuillez entrer un nom",
       invalid_type_error: "Veuillez entrer un nom valide",
@@ -79,50 +79,32 @@ const formSchema = z.object({
     }),
   ),
   category_id: z.string().nanoid(),
-  image_url: z.string(),
+  image_url: z.string().nullish(),
   active: z.boolean(),
   stock: z.string(),
 });
 
-export function FormArticle({
-  article,
+export function FormEditArticle({
   categories,
+  article,
 }: {
+  categories: ArticleCategory[];
   article: Article;
-  categories: Category[];
 }) {
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const { mutateAsync: editPlant } = api.plant.edit.useMutation({
+  const router = useRouter();
+
+  const { mutateAsync: updateArticleMutation } = api.article.edit.useMutation({
     onSuccess: () => {
-      setIsSubmitting(false);
-      toast("La plante a été modifiée avec succès");
+      toast("Article modifié avec succès");
+      router.push("/dashboard/shop");
     },
     onError: () => {
-      setIsSubmitting(false);
-      toast.error("Une erreur est survenue");
+      toast("Erreur lors de la modification de la article");
     },
   });
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
-    defaultValues: {
-      id: article.id,
-      title: article.title,
-      description: article.description,
-      image_url: article.image_url,
-      category_id: article.category_id,
-      price: (article.price / 100).toString(),
-      active: article.active,
-      stock: article.stock.toString(),
-      option: article.option.map((option) => {
-        return {
-          option_id: option.option_id,
-          name: option.name,
-          price: (option.price / 100).toString(),
-          stock: option.stock.toString(),
-          available: option.available,
-        };
-      }),
-    },
+    defaultValues: article,
   });
 
   const optionFieldArray = useFieldArray({
@@ -131,17 +113,17 @@ export function FormArticle({
   });
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
-    setIsSubmitting(true);
-    await editPlant({
+    await updateArticleMutation({
       ...values,
-      id: article.id,
     });
   }
+
+  console.log("article", article);
 
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)}>
-        <div className="flex min-h-screen w-full flex-col bg-muted/40">
+        <div className="flex min-h-screen w-full flex-col">
           <div className="flex flex-col sm:gap-4 sm:py-4 sm:pl-14">
             <main className="grid flex-1 items-start gap-4 p-4 sm:px-6 sm:py-0 md:gap-8">
               <div className="mx-auto grid max-w-[59rem] flex-1 auto-rows-max gap-4">
@@ -167,7 +149,7 @@ export function FormArticle({
                           <div className="grid grid-cols-2 gap-3">
                             <FormField
                               control={form.control}
-                              name="title"
+                              name="name"
                               render={({ field }) => (
                                 <FormItem>
                                   <FormLabel>Titre</FormLabel>
@@ -181,27 +163,29 @@ export function FormArticle({
                             <FormField
                               control={form.control}
                               name="price"
-                              render={({ field }) => (
-                                <FormItem>
-                                  <FormLabel>Prix</FormLabel>
-                                  <FormControl>
-                                    <CurrencyInput
-                                      placeholder="0.00"
-                                      decimalsLimit={2}
-                                      lang="fr"
-                                      name={field.name}
-                                      min={0}
-                                      prefix="€"
-                                      className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm transition-colors placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50"
-                                      onValueChange={(value) =>
-                                        field.onChange(value)
-                                      }
-                                      value={field.value}
-                                    />
-                                  </FormControl>
-                                  <FormMessage />
-                                </FormItem>
-                              )}
+                              render={({ field }) => {
+                                return (
+                                  <FormItem>
+                                    <FormLabel>Prix</FormLabel>
+                                    <FormControl>
+                                      <CurrencyInput
+                                        placeholder="0.00"
+                                        decimalsLimit={2}
+                                        lang="fr"
+                                        name={field.name}
+                                        min={0}
+                                        prefix="€"
+                                        defaultValue={article.price}
+                                        className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50"
+                                        onValueChange={(value) =>
+                                          field.onChange(value)
+                                        }
+                                      />
+                                    </FormControl>
+                                    <FormMessage />
+                                  </FormItem>
+                                );
+                              }}
                             />
                           </div>
                           <div className="grid gap-3">
@@ -275,12 +259,12 @@ export function FormArticle({
                                       name={`option.${index}.stock`}
                                       render={({ field }) => (
                                         <FormItem>
-                                          <FormLabel
+                                          <Label
                                             htmlFor="stock-1"
                                             className="sr-only"
                                           >
                                             {option.stock}
-                                          </FormLabel>
+                                          </Label>
                                           <FormControl>
                                             <Input
                                               placeholder="Pomme"
@@ -301,8 +285,7 @@ export function FormArticle({
                                           <Label className="sr-only">
                                             {Dinero({
                                               amount:
-                                                (option.price as unknown as number) *
-                                                100,
+                                                parseInt(option.price) * 100,
                                               currency: "EUR",
                                               precision: 2,
                                             })
@@ -316,12 +299,12 @@ export function FormArticle({
                                               lang="fr"
                                               name={field.name}
                                               min={0}
+                                              defaultValue={option.price}
                                               prefix="€"
-                                              className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm transition-colors placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50"
+                                              className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50"
                                               onValueChange={(value) =>
                                                 field.onChange(value)
                                               }
-                                              value={field.value}
                                             />
                                           </FormControl>
                                           <FormMessage />
@@ -364,7 +347,7 @@ export function FormArticle({
                           }
                         >
                           <PlusCircle className="h-3.5 w-3.5" />
-                          Add Variant
+                          Ajouter une variante
                         </Button>
                       </CardFooter>
                     </Card>
@@ -381,9 +364,12 @@ export function FormArticle({
                               <FormItem>
                                 <Label htmlFor="category">Category</Label>
                                 <FormControl>
-                                  <Select onValueChange={field.onChange}>
-                                    <SelectTrigger aria-label="Select category">
-                                      <SelectValue placeholder="Select category" />
+                                  <Select
+                                    onValueChange={field.onChange}
+                                    defaultValue={article.category_id}
+                                  >
+                                    <SelectTrigger aria-label="Choisir une catégorie">
+                                      <SelectValue placeholder="Choisir une catégorie" />
                                     </SelectTrigger>
                                     <SelectContent>
                                       {categories.map((category) => (
@@ -421,16 +407,15 @@ export function FormArticle({
                             name="active"
                             render={({ field }) => (
                               <FormItem>
-                                <Label>Stock</Label>
+                                <div>
+                                  <FormLabel>Disponible</FormLabel>
+                                </div>
                                 <FormControl>
                                   <Switch
                                     checked={field.value}
-                                    onCheckedChange={(value) =>
-                                      field.onChange(value)
-                                    }
+                                    onCheckedChange={field.onChange}
                                   />
                                 </FormControl>
-                                <FormMessage />
                               </FormItem>
                             )}
                           />
@@ -480,7 +465,7 @@ export function FormArticle({
                             name="image_url"
                             render={({ field }) => (
                               <FormItem>
-                                <FormLabel>Description</FormLabel>
+                                <FormLabel>Modifier l&apos;image</FormLabel>
                                 <FormControl>
                                   <UploadButton
                                     className="ut-button:bg-red-500 ut-button:ut-readying:bg-red-500/50 ut-button:px-4 mt-4 w-60"
@@ -508,12 +493,16 @@ export function FormArticle({
                             )}
                           />
                           <div className="grid grid-cols-3 gap-2">
-                            <button disabled>
+                            <button>
                               <Image
-                                alt="Product image"
+                                alt={article.name}
                                 className="aspect-square w-full rounded-md object-cover"
                                 height="84"
-                                src="/placeholder.svg"
+                                src={
+                                  typeof article.image_url === "string"
+                                    ? article.image_url
+                                    : "https://utfs.io/f/6a973de1-dab6-4ebe-ba9c-a07f4e27573b-ifo2lm.jpg"
+                                }
                                 width="84"
                               />
                             </button>
@@ -537,17 +526,10 @@ export function FormArticle({
                   </div>
                 </div>
                 <div className="flex items-center justify-center gap-2 md:hidden">
-                  <Button type="button" variant="outline" size="sm">
+                  <Button variant="outline" size="sm">
                     Discard
                   </Button>
-                  <Button
-                    type="submit"
-                    size="sm"
-                    disabled={isSubmitting}
-                    aria-disabled={isSubmitting}
-                  >
-                    Save Product
-                  </Button>
+                  <Button size="sm">Save Product</Button>
                 </div>
               </div>
             </main>

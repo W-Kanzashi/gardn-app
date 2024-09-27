@@ -61,7 +61,7 @@ export default async function Component() {
           </DropdownMenu>
         </div>
 
-        <DataTable columns={columns} data={validatedArticles.data ?? []} />
+        <DataTable columns={columns} data={validatedArticles.data} />
       </main>
     </div>
   );

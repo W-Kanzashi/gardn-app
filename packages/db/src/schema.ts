@@ -238,7 +238,7 @@ export const article = sqliteTable("article", {
   id: text("id", { length: 21 })
     .primaryKey()
     .$defaultFn(() => nanoid()),
-  title: text("name", { length: 100 }).notNull(),
+  name: text("name", { length: 100 }).notNull(),
   description: text("description", { length: 256 }).notNull(),
   price: integer("price").notNull(),
   image_url: text("image_url", { length: 256 }).notNull(),

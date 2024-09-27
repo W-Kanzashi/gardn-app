@@ -27,9 +27,25 @@
   ],
   "tasks": {
     "topo": {
+      "env": [
+        "AUTH_SECRET",
+        "EMAIL_SERVER_HOST",
+        "EMAIL_SERVER_PORT",
+        "EMAIL_SERVER_USER",
+        "EMAIL_SERVER_PASSWORD",
+        "EMAIL_FROM"
+      ],
       "dependsOn": ["^topo"]
     },
     "build": {
+      "env": [
+        "AUTH_SECRET",
+        "EMAIL_SERVER_HOST",
+        "EMAIL_SERVER_PORT",
+        "EMAIL_SERVER_USER",
+        "EMAIL_SERVER_PASSWORD",
+        "EMAIL_FROM"
+      ],
       "dependsOn": ["^build"],
       "outputs": [".cache/tsbuildinfo.json", "dist/**"]
     },
@@ -42,10 +58,26 @@
       "outputLogs": "new-only"
     },
     "lint": {
+      "env": [
+        "AUTH_SECRET",
+        "EMAIL_SERVER_HOST",
+        "EMAIL_SERVER_PORT",
+        "EMAIL_SERVER_USER",
+        "EMAIL_SERVER_PASSWORD",
+        "EMAIL_FROM"
+      ],
       "dependsOn": ["^topo", "^build"],
       "outputs": [".cache/.eslintcache"]
     },
     "typecheck": {
+      "env": [
+        "AUTH_SECRET",
+        "EMAIL_SERVER_HOST",
+        "EMAIL_SERVER_PORT",
+        "EMAIL_SERVER_USER",
+        "EMAIL_SERVER_PASSWORD",
+        "EMAIL_FROM"
+      ],
       "dependsOn": ["^topo", "^build"],
       "outputs": [".cache/tsbuildinfo.json"]
     },

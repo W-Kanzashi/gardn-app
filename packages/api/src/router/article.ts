@@ -13,9 +13,9 @@ export const articleRouter = createTRPCRouter({
   create: protectedProcedure
     .input(
       z.object({
-        title: z.string(),
+        name: z.string(),
         description: z.string(),
-        image_url: z.string(),
+        image_url: z.string().nullish(),
         price: z.string().transform((price) => parseFloat(price) * 100),
         stock: z.string().transform((stock) => parseInt(stock)),
         active: z.boolean(),
@@ -35,10 +35,10 @@ export const articleRouter = createTRPCRouter({
       return ctx.db
         .insert(article)
         .values({
-          title: input.title,
+          name: input.name,
           description: input.description,
           price: input.price,
-          image_url: input.image_url,
+          image_url: input.image_url ?? "",
           active: input.active,
           stock: input.stock,
           category_id: input.category_id,
@@ -57,18 +57,32 @@ export const articleRouter = createTRPCRouter({
     .input(
       z.object({
         id: z.string(),
-        title: z.string(),
+        name: z.string(),
         description: z.string(),
-        image_url: z.string(),
+        image_url: z.string().nullish(),
+        active: z.boolean(),
+        stock: z.string().transform((stock) => parseInt(stock)),
+        price: z.string().transform((price) => parseFloat(price) * 100),
+        category_id: z.string().nanoid(),
+        option: z.array(
+          z.object({
+            option_id: z.string().nanoid(),
+            name: z.string(),
+            available: z.boolean(),
+            price: z.string().transform((price) => parseFloat(price) * 100),
+            stock: z.string().transform((stock) => parseInt(stock)),
+          }),
+        ),
       }),
     )
     .mutation(({ ctx, input }) => {
       return ctx.db
         .update(article)
         .set({
-          title: input.title,
+          name: input.name,
           description: input.description,
-          image_url: input.image_url,
+          active: input.active,
+          image_url: input.image_url ?? "",
         })
         .where(eq(article.id, input.id));
     }),

@@ -14,7 +14,9 @@ import {
   TableRow,
 } from "@acme/ui/table";
 
-export default async function Component() {
+export const dynamic = "force-dynamic";
+
+export default async function Page() {
   const usersData = await db.query.user.findMany();
 
   return (

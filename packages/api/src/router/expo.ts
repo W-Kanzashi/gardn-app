@@ -1,9 +1,6 @@
 import { TRPCError } from "@trpc/server";
 import { z } from "zod";
 
-import { and, eq } from "@acme/db";
-import * as schema from "@acme/db/schema";
-
 import { createTRPCRouter, publicProcedure } from "../trpc";
 import { ui } from "./_utils/ui";
 import { navBar } from "./_utils/ui/nav-bar";
@@ -19,7 +16,7 @@ export const expoRouter = createTRPCRouter({
         type: z.enum(["layout", "page"]),
       }),
     )
-    .query(async ({ ctx, input }) => {
+    .query(({ input }) => {
       // Check in the db if the page exists
       // If it does, check if the etag is the same
       // If it is, return null

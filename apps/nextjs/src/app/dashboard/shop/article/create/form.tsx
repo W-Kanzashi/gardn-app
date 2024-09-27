@@ -52,10 +52,10 @@ import {
 } from "@acme/ui/table";
 import { Textarea } from "@acme/ui/textarea";
 
-import type { ArticleCategory } from "./types";
+import type { ArticleCategory } from "../_utils/types";
 
 const formSchema = z.object({
-  title: z
+  name: z
     .string({
       required_error: "Veuillez entrer un nom",
       invalid_type_error: "Veuillez entrer un nom valide",
@@ -78,7 +78,7 @@ const formSchema = z.object({
     }),
   ),
   category_id: z.string().nanoid(),
-  image_url: z.string(),
+  image_url: z.string().nullish(),
   active: z.boolean(),
   stock: z.string(),
 });
@@ -139,7 +139,7 @@ export function FormArticle({ categories }: { categories: ArticleCategory[] }) {
                           <div className="grid grid-cols-2 gap-3">
                             <FormField
                               control={form.control}
-                              name="title"
+                              name="name"
                               render={({ field }) => (
                                 <FormItem>
                                   <FormLabel>Titre</FormLabel>
@@ -391,16 +391,15 @@ export function FormArticle({ categories }: { categories: ArticleCategory[] }) {
                             name="active"
                             render={({ field }) => (
                               <FormItem>
-                                <Label>Stock</Label>
+                                <div>
+                                  <FormLabel>Disponible</FormLabel>
+                                </div>
                                 <FormControl>
                                   <Switch
                                     checked={field.value}
-                                    onCheckedChange={(value) =>
-                                      field.onChange(value)
-                                    }
+                                    onCheckedChange={field.onChange}
                                   />
                                 </FormControl>
-                                <FormMessage />
                               </FormItem>
                             )}
                           />
