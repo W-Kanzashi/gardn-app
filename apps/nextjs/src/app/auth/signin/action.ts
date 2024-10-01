@@ -7,7 +7,7 @@ import { signIn } from "@acme/auth";
 const Email = z.string().email();
 
 export async function sendVerificationRequest(
-  prevState: unknown,
+  _prevState: unknown,
   formData: FormData,
 ) {
   const result = Email.safeParse(formData.get("email"));
@@ -21,6 +21,7 @@ export async function sendVerificationRequest(
   try {
     await signIn("resend", {
       email: result.data,
+      redirectTo: "/",
     });
   } catch (error) {
     console.error("Error sending verification request", error);

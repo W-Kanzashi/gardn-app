@@ -1,15 +1,33 @@
-import { renderComponent } from "~/components/render";
-import { api } from "~/utils/api";
+import { Pressable, View } from "react-native";
+import { Link } from "expo-router";
+import Feather from "@expo/vector-icons/Feather";
 
 export function NavBar() {
-  const { data: navBarData } = api.expo.getByPage.useQuery({
-    type: "layout",
-    page: "[nav-bar]",
-  });
+  return (
+    <View className="item-center absolute bottom-6 mx-6 flex flex-row justify-between rounded-full bg-gray-300">
+      <Link href="/protected" asChild>
+        <Pressable className="flex flex-1 items-center justify-center p-6">
+          <Feather name="home" size={24} color="#0f0f0f" />
+        </Pressable>
+      </Link>
 
-  if (!navBarData) {
-    return null;
-  }
+      <Link href="/protected/shop" asChild>
+        <Pressable className="flex flex-1 items-center justify-center p-6">
+          <Feather name="shopping-cart" size={24} color="#0f0f0f" />
+        </Pressable>
+      </Link>
 
-  return renderComponent(navBarData.ui);
+      <Link href="/protected/plant" asChild>
+        <Pressable className="flex flex-1 items-center justify-center p-6">
+          <Feather name="sun" size={24} color="#0f0f0f" />
+        </Pressable>
+      </Link>
+
+      <Link href="/protected/settings" asChild>
+        <Pressable className="flex flex-1 items-center justify-center p-6">
+          <Feather name="settings" size={24} color="#0f0f0f" />
+        </Pressable>
+      </Link>
+    </View>
+  );
 }

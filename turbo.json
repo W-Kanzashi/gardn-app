@@ -1,7 +1,9 @@
 {
   "$schema": "https://turborepo.org/schema.json",
   "ui": "tui",
-  "globalDependencies": ["**/.env"],
+  "globalDependencies": [
+    "**/.env"
+  ],
   "globalEnv": [
     "DB_HOST",
     "DB_TOKEN",
@@ -26,17 +28,6 @@
     "npm_lifecycle_event"
   ],
   "tasks": {
-    "topo": {
-      "env": [
-        "AUTH_SECRET",
-        "EMAIL_SERVER_HOST",
-        "EMAIL_SERVER_PORT",
-        "EMAIL_SERVER_USER",
-        "EMAIL_SERVER_PASSWORD",
-        "EMAIL_FROM"
-      ],
-      "dependsOn": ["^topo"]
-    },
     "build": {
       "env": [
         "AUTH_SECRET",
@@ -46,15 +37,22 @@
         "EMAIL_SERVER_PASSWORD",
         "EMAIL_FROM"
       ],
-      "dependsOn": ["^build"],
-      "outputs": [".cache/tsbuildinfo.json", "dist/**"]
+      "dependsOn": [
+        "^build"
+      ],
+      "outputs": [
+        ".cache/tsbuildinfo.json",
+        "dist/**"
+      ]
     },
     "dev": {
       "persistent": true,
       "cache": false
     },
     "format": {
-      "outputs": ["node_modules/.cache/.prettiercache"],
+      "outputs": [
+        "node_modules/.cache/.prettiercache"
+      ],
       "outputLogs": "new-only"
     },
     "lint": {
@@ -66,8 +64,12 @@
         "EMAIL_SERVER_PASSWORD",
         "EMAIL_FROM"
       ],
-      "dependsOn": ["^topo", "^build"],
-      "outputs": [".cache/.eslintcache"]
+      "dependsOn": [
+        "^build"
+      ],
+      "outputs": [
+        ".cache/.eslintcache"
+      ]
     },
     "typecheck": {
       "env": [
@@ -78,8 +80,12 @@
         "EMAIL_SERVER_PASSWORD",
         "EMAIL_FROM"
       ],
-      "dependsOn": ["^topo", "^build"],
-      "outputs": [".cache/tsbuildinfo.json"]
+      "dependsOn": [
+        "^build"
+      ],
+      "outputs": [
+        ".cache/tsbuildinfo.json"
+      ]
     },
     "clean": {
       "cache": false

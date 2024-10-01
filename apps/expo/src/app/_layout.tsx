@@ -6,6 +6,7 @@ import { TRPCProvider } from "~/utils/api";
 import "../styles.css";
 
 import { SafeAreaView, Text, View } from "react-native";
+import { SafeAreaProvider } from "react-native-safe-area-context";
 import { useDrizzleStudio } from "expo-drizzle-studio-plugin";
 import * as SQLite from "expo-sqlite";
 import { useMigrations } from "drizzle-orm/expo-sqlite/migrator";
@@ -26,11 +27,9 @@ export default function RootLayout() {
 
   if (error) {
     return (
-      <SafeAreaView>
-        <View>
-          <Text>Migration error: {error.message}</Text>
-        </View>
-      </SafeAreaView>
+      <View>
+        <Text>Migration error: {error.message}</Text>
+      </View>
     );
   }
 
@@ -44,22 +43,21 @@ export default function RootLayout() {
 
   return (
     <TRPCProvider>
-      {/*
+      <SafeAreaProvider>
+        {/*
           The Stack component displays the current page.
           It also allows you to configure your screens 
         */}
-      <Stack
-        screenOptions={{
-          headerStyle: {
-            backgroundColor: "#f472b6",
-          },
-          contentStyle: {
-            backgroundColor: colorScheme == "dark" ? "#09090B" : "#FFFFFF",
-          },
-        }}
-      />
-      <NavBar />
-      <StatusBar />
+        <Stack
+          screenOptions={{
+            contentStyle: {
+              backgroundColor: colorScheme == "dark" ? "#09090B" : "#FFFFFF",
+            },
+          }}
+        />
+        <NavBar />
+        <StatusBar />
+      </SafeAreaProvider>
     </TRPCProvider>
   );
 }
