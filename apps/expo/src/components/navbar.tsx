@@ -4,8 +4,8 @@ import Feather from "@expo/vector-icons/Feather";
 
 export function NavBar() {
   return (
-    <View className="item-center absolute bottom-6 mx-6 flex flex-row justify-between rounded-full bg-gray-300">
-      <Link href="/protected" asChild>
+    <View className="absolute bottom-6 mx-6 flex flex-row items-center justify-between rounded-full bg-gray-300">
+      <Link href="/protected/home" asChild>
         <Pressable className="flex flex-1 items-center justify-center p-6">
           <Feather name="home" size={24} color="#0f0f0f" />
         </Pressable>

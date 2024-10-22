@@ -37,7 +37,17 @@ const defineConfig = (): ExpoConfig => ({
     tsconfigPaths: true,
     typedRoutes: true,
   },
-  plugins: ["expo-router"],
+  plugins: [
+    "expo-router",
+    [
+      "expo-font",
+      {
+        fonts: [
+          "node_modules/@expo-google-fonts/shantel-sans/ShantellSans_400Regular.ttf",
+        ],
+      },
+    ],
+  ],
 });
 
 export default defineConfig;

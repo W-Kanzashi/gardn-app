@@ -14,7 +14,9 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
+    "@clerk/clerk-expo": "^2.2.18",
     "@dev-plugins/react-query": "^0.0.7",
+    "@expo-google-fonts/shantell-sans": "^0.2.3",
     "@expo/metro-config": "^0.18.11",
     "@expo/vector-icons": "^14.0.3",
     "@shopify/flash-list": "1.7.1",
@@ -27,6 +29,7 @@
     "expo": "~51.0.34",
     "expo-constants": "~16.0.2",
     "expo-drizzle-studio-plugin": "^0.0.2",
+    "expo-font": "^12.0.10",
     "expo-image": "^1.13.0",
     "expo-linking": "~6.3.1",
     "expo-router": "~3.5.23",

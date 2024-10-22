@@ -1,9 +1,9 @@
 import Image from "next/image";
 import Link from "next/link";
 import { redirect } from "next/navigation";
+import { auth } from "@clerk/nextjs/server";
 import { ArrowRightIcon, Package2Icon, SearchIcon } from "lucide-react";
 
-import { auth } from "@acme/auth";
 import { Button } from "@acme/ui/button";
 import {
   Card,
@@ -22,10 +22,10 @@ import {
 } from "@acme/ui/dropdown-menu";
 import { Input } from "@acme/ui/input";
 
-export default async function Page() {
-  const session = await auth();
+export default function Page() {
+  const { userId } = auth();
 
-  if (!session) {
+  if (!userId) {
     redirect("/auth/signin");
   }
 
