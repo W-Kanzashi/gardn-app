@@ -33,7 +33,6 @@ import { Popover, PopoverContent, PopoverTrigger } from "@acme/ui/popover";
 import { Textarea } from "@acme/ui/textarea";
 
 import { categories } from "../_utils/categories";
-import { revalidatePath } from "../../_utils/action";
 
 const formSchema = z.object({
   title: z
@@ -56,9 +55,8 @@ export function FormPlant() {
   const router = useRouter();
 
   const { mutateAsync: editPlant } = api.plant.create.useMutation({
-    onSuccess: async () => {
+    onSuccess: () => {
       toast("Plante ajoutée avec succès");
-      await revalidatePath("/dashboard/plant");
 
       router.push("/dashboard/plant");
     },
@@ -68,6 +66,11 @@ export function FormPlant() {
   });
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
+    defaultValues: {
+      title: "",
+      description: "",
+      image_url: "",
+    },
   });
 
   async function onSubmit(values: z.infer<typeof formSchema>) {

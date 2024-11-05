@@ -21,8 +21,6 @@ import {
 import { Input } from "@acme/ui/input";
 import { Textarea } from "@acme/ui/textarea";
 
-import { refreshPage } from "../_utils/action";
-
 const formSchema = z.object({
   title: z
     .string({
@@ -43,10 +41,10 @@ export function FormCategory() {
 
   const { mutateAsync: createCategories } =
     api.article.create_categories.useMutation({
-      onSuccess: async () => {
+      onSuccess: () => {
         toast("Catégorie ajoutée avec succès");
-        router.refresh();
-        await refreshPage({ route: "/dashboard/shop/category" });
+
+        router.push("/dashboard/shop/category");
       },
       onError: () => {
         toast("Erreur lors de l'ajout de la catégorie");

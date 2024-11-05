@@ -21,7 +21,7 @@
   "dependencies": {
     "@acme/db": "workspace:*",
     "@acme/validators": "workspace:*",
-    "@clerk/nextjs": "^5.6.4",
+    "@clerk/nextjs": "^6.2.0",
     "@trpc/server": "catalog:",
     "superjson": "2.2.1",
     "zod": "catalog:"

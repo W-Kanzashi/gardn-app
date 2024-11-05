@@ -9,7 +9,7 @@ import Dinero from "dinero.js";
 import { Button } from "@acme/ui/button";
 import { Popover, PopoverContent, PopoverTrigger } from "@acme/ui/popover";
 
-import type { Article } from "../../_utils/types";
+import type { Article } from "../../../_utils/types";
 import { DeletePlant } from "../delete";
 
 export const columns: ColumnDef<Article>[] = [
@@ -93,13 +93,6 @@ export const columns: ColumnDef<Article>[] = [
             >
               <GearIcon className="h-4 w-4" />
               <span className="text-sm font-medium">Afficher</span>
-            </Link>
-            <Link
-              href={`/dashboard/shop/article/edit/${row.original.id}`}
-              className="flex w-full items-center space-x-2 rounded-lg px-2 py-2 text-gray-500 hover:bg-gray-200 active:bg-gray-300"
-            >
-              <GearIcon className="h-4 w-4" />
-              <span className="text-sm font-medium">Editer</span>
             </Link>
             <DeletePlant plantId={row.original.id} />
           </PopoverContent>

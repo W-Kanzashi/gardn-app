@@ -9,7 +9,6 @@ import {
   useReactTable,
 } from "@tanstack/react-table";
 
-import { Input } from "@acme/ui/input";
 import {
   Table,
   TableBody,
@@ -18,6 +17,8 @@ import {
   TableHeader,
   TableRow,
 } from "@acme/ui/table";
+
+import { DataTableToolbar } from "./data-table-toolbar";
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
@@ -44,18 +45,8 @@ export function DataTable<TData, TValue>({
   });
 
   return (
-    <div>
-      <div className="flex items-center py-4">
-        <Input
-          placeholder="Filter par nom..."
-          value={table.getColumn("Nom")?.getFilterValue() as string}
-          defaultValue=""
-          onChange={(event) =>
-            table.getColumn("Nom")?.setFilterValue(event.target.value)
-          }
-          className="max-w-sm"
-        />
-      </div>
+    <div className="space-y-2">
+      <DataTableToolbar table={table} />
       <div className="rounded-md border">
         <Table>
           <TableHeader>

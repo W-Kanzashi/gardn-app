@@ -3,9 +3,9 @@ import { z } from "zod";
 import { eq } from "@acme/db";
 import * as schema from "@acme/db/schema";
 
-import { createTRPCRouter, protectedProcedure, publicProcedure } from "../trpc";
+import { protectedProcedure, publicProcedure, router } from "../trpc";
 
-export const plantRouter = createTRPCRouter({
+export const plantRouter = router({
   byId: publicProcedure
     .input(z.object({ id: z.string().nanoid() }))
     .query(({ ctx, input }) => {

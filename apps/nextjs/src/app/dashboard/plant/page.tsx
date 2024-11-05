@@ -1,9 +1,7 @@
 import Link from "next/link";
-import { redirect } from "next/navigation";
 import { PlusIcon } from "@radix-ui/react-icons";
 import { z } from "zod";
 
-import { auth } from "@acme/auth";
 import { db, eq } from "@acme/db";
 import { plant } from "@acme/db/schema";
 import { Button } from "@acme/ui/button";
@@ -13,12 +11,6 @@ import { DataTable } from "./_components/data-table/data-table";
 import { plantSchema } from "./_utils/types";
 
 export default async function Component() {
-  const session = await auth();
-
-  if (!session) {
-    redirect("/auth/signin");
-  }
-
   const plants = await db.query.plant.findMany({
     where: eq(plant.deleted, false),
   });

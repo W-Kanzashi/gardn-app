@@ -3,9 +3,9 @@ import { z } from "zod";
 import { eq } from "@acme/db";
 import { article, article_category } from "@acme/db/schema";
 
-import { createTRPCRouter, protectedProcedure, publicProcedure } from "../trpc";
+import { protectedProcedure, publicProcedure, router } from "../trpc";
 
-export const articleRouter = createTRPCRouter({
+export const articleRouter = router({
   list: publicProcedure.query(({ ctx }) => {
     return ctx.db.query.article.findMany();
   }),

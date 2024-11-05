@@ -1,13 +1,8 @@
-/**
- * YOU PROBABLY DON'T NEED TO EDIT THIS FILE, UNLESS:
- * 1. You want to modify request context (see Part 1)
- * 2. You want to create a new middleware or type of procedure (see Part 3)
- *
- * tl;dr - this is where all the tRPC server stuff is created and plugged in.
- * The pieces you will need to use are documented accordingly near the end
- */
-import type * as trpcNext from "@trpc/server/adapters/next";
-import { getAuth } from "@clerk/nextjs/server";
+import type {
+  SignedInAuthObject,
+  SignedOutAuthObject,
+} from "@clerk/backend/internal";
+import { auth as clerkAuth } from "@clerk/nextjs/server";
 import { initTRPC, TRPCError } from "@trpc/server";
 import superjson from "superjson";
 import { ZodError } from "zod";
@@ -15,41 +10,64 @@ import { ZodError } from "zod";
 import { db } from "@acme/db";
 
 /**
- * 1. CONTEXT
- *
- * This section defines the "contexts" that are available in the backend API.
- *
- * These allow you to access things when processing a request, like the database, the session, etc.
- *
- * This helper generates the "internals" for a tRPC context. The API handler and RSC clients each
- * wrap this and provides the required context.
- *
- * @see https://trpc.io/docs/server/context
+ * Replace this with an object if you want to pass things to createContextInner
  */
-export const createTRPCContext = async (
-  opts: trpcNext.CreateNextContextOptions,
-  // eslint-disable-next-line @typescript-eslint/require-await
-) => {
-  return { auth: getAuth(opts.req), db };
+interface AuthContextProps {
+  auth: SignedOutAuthObject | SignedInAuthObject;
+}
+
+/** Use this helper for:
+ *  - testing, where we dont have to Mock Next.js' req/res
+ *  - trpc's `createSSGHelpers` where we don't have req/res
+ * @see https://beta.create.t3.gg/en/usage/trpc#-servertrpccontextts
+ */
+export const createContextInner = ({
+  auth,
+}: AuthContextProps): {
+  auth: AuthContextProps["auth"];
+  db: typeof db;
+} => {
+  return {
+    auth,
+    db,
+  };
 };
 
-export type Context = Awaited<ReturnType<typeof createTRPCContext>>;
+/**
+ * This is the actual context you'll use in your router
+ * @link https://trpc.io/docs/context
+ */
+export const createContext = async (opts: {
+  auth: SignedOutAuthObject | SignedInAuthObject | null;
+  headers: Headers;
+}): Promise<ReturnType<typeof createContextInner>> => {
+  const auth = opts.auth ?? (await clerkAuth());
+  const source = opts.headers.get("x-trpc-source") ?? "unknown";
 
+  console.log(">>> tRPC Request from", source, "by", auth.userId);
+
+  return createContextInner({ auth });
+};
+
+export type Context = Awaited<ReturnType<typeof createContext>>;
 /**
  * 2. INITIALIZATION
  *
  * This is where the trpc api is initialized, connecting the context and
  * transformer
  */
-const t = initTRPC.context<typeof createTRPCContext>().create({
+const t = initTRPC.context<Context>().create({
   transformer: superjson,
-  errorFormatter: ({ shape, error }) => ({
-    ...shape,
-    data: {
-      ...shape.data,
-      zodError: error.cause instanceof ZodError ? error.cause.flatten() : null,
-    },
-  }),
+  errorFormatter({ shape, error }) {
+    return {
+      ...shape,
+      data: {
+        ...shape.data,
+        zodError:
+          error.cause instanceof ZodError ? error.cause.flatten() : null,
+      },
+    };
+  },
 });
 
 /**
@@ -58,25 +76,6 @@ const t = initTRPC.context<typeof createTRPCContext>().create({
  */
 export const createCallerFactory = t.createCallerFactory;
 
-/**
- * 3. ROUTER & PROCEDURE (THE IMPORTANT BIT)
- *
- * These are the pieces you use to build your tRPC API. You should import these
- * a lot in the /src/server/api/routers folder
- */
-
-/**
- * This is how you create new routers and subrouters in your tRPC API
- * @see https://trpc.io/docs/router
- */
-export const createTRPCRouter = t.router;
-
-/**
- * Middleware for timing procedure execution and adding an articifial delay in development.
- *
- * You can remove this if you don't like it, but it can help catch unwanted waterfalls by simulating
- * network latency that would occur in production but not in local development.
- */
 const timingMiddleware = t.middleware(async ({ next, path }) => {
   const start = Date.now();
 
@@ -95,6 +94,14 @@ const timingMiddleware = t.middleware(async ({ next, path }) => {
 });
 
 /**
+ * This is how you create new routers and subrouters in your tRPC API
+ * @see https://trpc.io/docs/router
+ */
+export const router = t.router;
+
+export const mergeRouters = t.mergeRouters;
+
+/**
  * Public (unauthed) procedure
  *
  * This is the base piece you use to build new queries and mutations on your
@@ -104,24 +111,24 @@ const timingMiddleware = t.middleware(async ({ next, path }) => {
 export const publicProcedure = t.procedure.use(timingMiddleware);
 
 /**
- * Protected (authenticated) procedure
+ * Protected (authed) procedure
  *
- * If you want a query or mutation to ONLY be accessible to logged in users, use this. It verifies
- * the session is valid and guarantees `ctx.session.user` is not null.
+ * If you want a query or mutation to ONLY be accessible to logged in users, use
+ * this. It verifies the session is valid and guarantees ctx.session.user is not
+ * null
  *
  * @see https://trpc.io/docs/procedures
  */
 export const protectedProcedure = t.procedure
   .use(timingMiddleware)
-  .use(({ ctx, next }) => {
+  .use(({ next, ctx }) => {
     if (!ctx.auth.userId) {
       throw new TRPCError({ code: "UNAUTHORIZED" });
     }
+
     return next({
       ctx: {
-        // infers the `session` as non-nullable
-        auth: ctx.auth,
-        db,
+        user: ctx.auth,
       },
     });
   });

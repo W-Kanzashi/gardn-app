@@ -13,33 +13,32 @@ import { DeletePlant } from "../delete";
 
 export const columns: ColumnDef<Plant>[] = [
   {
-    id: "Identifiant",
+    id: "id",
     accessorKey: "id",
-    header: ({ column }) => <div>{column.id}</div>,
+    header: () => <div>Identifiant</div>,
     cell: ({ row }) => {
-      return (
-        <div className="w-[150px] truncate">
-          <span>{row.original.id}</span>
-        </div>
-      );
+      return <div className="truncate">{row.original.id}</div>;
     },
   },
   {
-    id: "Nom",
+    id: "title",
     accessorKey: "title",
-    header: ({ column }) => <div>{column.id}</div>,
+    header: () => <div>Nom</div>,
     cell: ({ row }) => {
-      return (
-        <div>
-          <span className="capitalize">{row.original.title}</span>
-        </div>
-      );
+      return <div className="capitalize">{row.original.title}</div>;
     },
   },
   {
-    id: "Catégorie",
+    id: "category_id",
     accessorKey: "category_id",
-    header: ({ column }) => <div>{column.id}</div>,
+    filterFn: (row, _columnId, filterValue) => {
+      if (Array.isArray(filterValue)) {
+        return filterValue.includes(row.original.category_id);
+      }
+
+      return false;
+    },
+    header: () => <div>Catégorie</div>,
     cell: ({ row }) => {
       const categories = {
         DUc2SUOne7PIYlmVnKTTW: { label: "Fruit" },
@@ -58,9 +57,9 @@ export const columns: ColumnDef<Plant>[] = [
     },
   },
   {
-    id: "Image",
+    id: "image_url",
     accessorKey: "image_url",
-    header: ({ column }) => <div>{column.id}</div>,
+    header: () => <div>Image</div>,
     cell: ({ row }) => {
       return (
         <div className="relative h-10 w-10 overflow-hidden">

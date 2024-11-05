@@ -89,7 +89,8 @@ export function FormArticle({ categories }: { categories: ArticleCategory[] }) {
   const { mutateAsync: createArticle } = api.article.create.useMutation({
     onSuccess: () => {
       toast("Article ajoutée avec succès");
-      router.refresh();
+
+      router.push("/dashboard/shop/article");
     },
     onError: () => {
       toast("Erreur lors de l'ajout de la article");

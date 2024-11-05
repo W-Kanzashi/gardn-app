@@ -12,8 +12,7 @@ export const credentials =
 
 export default {
   schema: "./src/schema.ts",
-  driver: "turso",
-  dialect: "sqlite",
+  dialect: "turso",
   dbCredentials: credentials,
   tablesFilter: ["gardn_*"],
   verbose: true,

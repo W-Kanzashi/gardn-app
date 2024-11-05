@@ -22,8 +22,8 @@ import {
 } from "@acme/ui/dropdown-menu";
 import { Input } from "@acme/ui/input";
 
-export default function Page() {
-  const { userId } = auth();
+export default async function Page() {
+  const { userId } = await auth();
 
   if (!userId) {
     redirect("/auth/signin");

@@ -1,13 +1,13 @@
 import { TRPCError } from "@trpc/server";
 import { z } from "zod";
 
-import { createTRPCRouter, publicProcedure } from "../trpc";
+import { publicProcedure, router } from "../trpc";
 import { ui } from "./_utils/ui";
 import { navBar } from "./_utils/ui/nav-bar";
 import { plant_1 } from "./_utils/ui/plant/id";
 import { shop } from "./_utils/ui/shop";
 
-export const expoRouter = createTRPCRouter({
+export const expoRouter = router({
   getByPage: publicProcedure
     .input(
       z.object({

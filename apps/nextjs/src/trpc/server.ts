@@ -1,21 +1,22 @@
 import { cache } from "react";
 import { headers } from "next/headers";
-import { auth } from "@clerk/nextjs/server";
+import { auth as clerkAuth } from "@clerk/nextjs/server";
 
-import { createCaller, createTRPCContext } from "@acme/api";
+import { createCaller, createContext } from "@acme/api";
 
 /**
  * This wraps the `createTRPCContext` helper and provides the required context for the tRPC API when
  * handling a tRPC call from a React Server Component.
  */
-const createContext = cache(async () => {
-  const heads = new Headers(headers());
+const createContextAPI = cache(async () => {
+  const heads = new Headers(await headers());
   heads.set("x-trpc-source", "rsc");
+  const auth = await clerkAuth();
 
-  return createTRPCContext({
-    auth: auth(),
+  return createContext({
+    auth: auth,
     headers: heads,
   });
 });
 
-export const api = createCaller(createContext);
+export const api = createCaller(createContextAPI);

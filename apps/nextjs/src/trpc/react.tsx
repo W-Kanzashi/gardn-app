@@ -47,7 +47,6 @@ export function TRPCReactProvider(props: { children: React.ReactNode }) {
         unstable_httpBatchStreamLink({
           transformer: SuperJSON,
           url: getBaseUrl() + "/api/trpc",
-          // @ts-expect-error - TODO: fix types
           headers() {
             const headers = new Headers();
             headers.set("x-trpc-source", "nextjs-react");

@@ -1,157 +1,387 @@
 "use client";
 
+import type { ReactNode } from "react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
 import {
-  BarChartIcon,
-  BellIcon,
-  CalendarIcon,
-  DollarSignIcon,
-  HomeIcon,
-  Package2Icon,
-  PackageIcon,
-  SettingsIcon,
-  TruckIcon,
-  UsersIcon,
+  BadgeCheck,
+  Bell,
+  BookOpen,
+  Bot,
+  ChevronRight,
+  ChevronsUpDown,
+  Command,
+  CreditCard,
+  Folder,
+  Frame,
+  LifeBuoy,
+  LogOut,
+  Map,
+  MoreHorizontal,
+  PieChart,
+  Send,
+  Settings2,
+  Share,
+  Sparkles,
+  SquareTerminal,
+  Trash2,
 } from "lucide-react";
 
-import { cn } from "@acme/ui";
-import { Button } from "@acme/ui/button";
+import {
+  Breadcrumb,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  BreadcrumbList,
+  BreadcrumbPage,
+  BreadcrumbSeparator,
+} from "@acme/ui/breadcrumb";
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from "@acme/ui/collapsible";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuGroup,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@acme/ui/dropdown-menu";
+import { Separator } from "@acme/ui/separator";
+import {
+  Sidebar,
+  SidebarContent,
+  SidebarFooter,
+  SidebarGroup,
+  SidebarGroupContent,
+  SidebarGroupLabel,
+  SidebarHeader,
+  SidebarInset,
+  SidebarMenu,
+  SidebarMenuAction,
+  SidebarMenuButton,
+  SidebarMenuItem,
+  SidebarMenuSub,
+  SidebarMenuSubButton,
+  SidebarMenuSubItem,
+  SidebarProvider,
+  SidebarTrigger,
+} from "@acme/ui/sidebar";
 
-export function Sidebar() {
-  const pathname = usePathname();
+export const iframeHeight = "800px";
+
+export const description = "An inset sidebar with secondary navigation.";
+
+const data = {
+  user: {
+    name: "shadcn",
+    email: "m@example.com",
+    avatar: "/avatars/shadcn.jpg",
+  },
+  navMain: [
+    {
+      title: "Plantes",
+      url: "plant",
+      icon: SquareTerminal,
+      isActive: true,
+      items: [
+        {
+          title: "Liste des plantes",
+          url: "plant",
+        },
+        {
+          title: "Ajouter une plante",
+          url: "plant/create",
+        },
+        {
+          title: "Paramètres",
+          url: "plant/settings",
+        },
+      ],
+    },
+    {
+      title: "Magasin",
+      url: "shop",
+      icon: Bot,
+      items: [
+        {
+          title: "Articles",
+          url: "shop/article",
+        },
+      ],
+    },
+    {
+      title: "Commandes",
+      url: "order",
+      icon: LifeBuoy,
+    },
+    {
+      title: "Client",
+      url: "client",
+      icon: BookOpen,
+    },
+    {
+      title: "Settings",
+      url: "settings",
+      icon: Settings2,
+    },
+  ],
+  navSecondary: [
+    {
+      title: "Support",
+      url: "#",
+      icon: LifeBuoy,
+    },
+    {
+      title: "Feedback",
+      url: "#",
+      icon: Send,
+    },
+  ],
+  projects: [
+    {
+      name: "Design Engineering",
+      url: "#",
+      icon: Frame,
+    },
+    {
+      name: "Sales & Marketing",
+      url: "#",
+      icon: PieChart,
+    },
+    {
+      name: "Travel",
+      url: "#",
+      icon: Map,
+    },
+  ],
+};
+
+export function AppSidebar({ children }: { children: ReactNode }) {
   return (
-    <aside className="border-r bg-gray-100/40 dark:bg-gray-800/40 lg:block">
-      <div className="flex h-screen flex-col gap-2">
-        <div className="flex h-[60px] items-center border-b px-6">
-          <Link
-            className="flex items-center gap-2 font-semibold"
-            href="/dashboard"
-          >
-            <Package2Icon className="h-6 w-6" />
-            <span className="">Gard&apos;n</span>
-          </Link>
-          <Button className="ml-auto h-8 w-8" size="icon" variant="outline">
-            <BellIcon className="h-4 w-4" />
-            <span className="sr-only">Toggle notifications</span>
-          </Button>
-        </div>
-        <div className="flex-1 overflow-auto py-2">
-          <div className="grid items-start px-4 text-sm font-medium">
-            <Link
-              className={cn(
-                "flex items-center gap-3 rounded-lg px-3 py-2 transition-all",
-                pathname.endsWith("dashboard")
-                  ? "bg-gray-100 text-gray-900 hover:text-gray-900 dark:bg-gray-800 dark:text-gray-50 dark:hover:text-gray-50"
-                  : "",
-              )}
-              href="/dashboard"
-            >
-              <HomeIcon className="h-4 w-4" />
-              Acceuil
-            </Link>
-            <div className="text-gray-500 dark:text-gray-400">Modules</div>
-            <Link
-              className={cn(
-                "flex items-center gap-3 rounded-lg px-3 py-2 transition-all",
-                pathname.includes("users")
-                  ? "bg-gray-100 text-gray-900 hover:text-gray-900 dark:bg-gray-800 dark:text-gray-50 dark:hover:text-gray-50"
-                  : "",
-              )}
-              href="/dashboard/users"
-            >
-              <UsersIcon className="h-4 w-4" />
-              Utilisateurs
-            </Link>
-            <Link
-              className={cn(
-                "flex items-center gap-3 rounded-lg px-3 py-2 transition-all",
-                pathname.includes("sales")
-                  ? "bg-gray-100 text-gray-900 hover:text-gray-900 dark:bg-gray-800 dark:text-gray-50 dark:hover:text-gray-50"
-                  : "",
-              )}
-              href="/dashboard/sales"
-            >
-              <PackageIcon className="h-4 w-4" />
-              Ventes
-            </Link>
-            <Link
-              className={cn(
-                "flex items-center gap-3 rounded-lg px-3 py-2 transition-all",
-                pathname.includes("plant")
-                  ? "bg-gray-100 text-gray-900 hover:text-gray-900 dark:bg-gray-800 dark:text-gray-50 dark:hover:text-gray-50"
-                  : "",
-              )}
-              href="/dashboard/plant"
-            >
-              <DollarSignIcon className="h-4 w-4" />
-              Plantes
-            </Link>
-            <Link
-              className={cn(
-                "flex items-center gap-3 rounded-lg px-3 py-2 transition-all",
-                pathname.includes("shop")
-                  ? "bg-gray-100 text-gray-900 hover:text-gray-900 dark:bg-gray-800 dark:text-gray-50 dark:hover:text-gray-50"
-                  : "",
-              )}
-              href="/dashboard/shop"
-            >
-              <CalendarIcon className="h-4 w-4" />
-              Magasin
-            </Link>
-            <div className="text-gray-500 dark:text-gray-400">Magasin</div>
-            <Link
-              className={cn(
-                "flex items-center gap-3 rounded-lg px-3 py-2 transition-all",
-                pathname.includes("sales")
-                  ? "bg-gray-100 text-gray-900 hover:text-gray-900 dark:bg-gray-800 dark:text-gray-50 dark:hover:text-gray-50"
-                  : "",
-              )}
-              href="/dashboard/sales"
-            >
-              <TruckIcon className="h-4 w-4" />
-              Achats
-            </Link>
-            <Link
-              className={cn(
-                "flex items-center gap-3 rounded-lg px-3 py-2 transition-all",
-                pathname.includes("articles")
-                  ? "bg-gray-100 text-gray-900 hover:text-gray-900 dark:bg-gray-800 dark:text-gray-50 dark:hover:text-gray-50"
-                  : "",
-              )}
-              href="/dashboard/sales/articles"
-            >
-              <TruckIcon className="h-4 w-4" />
-              Articles
-            </Link>
-            <div className="text-gray-500 dark:text-gray-400">Tools</div>
-            <Link
-              className={cn(
-                "flex items-center gap-3 rounded-lg px-3 py-2 transition-all",
-                pathname.includes("analytics")
-                  ? "bg-gray-100 text-gray-900 hover:text-gray-900 dark:bg-gray-800 dark:text-gray-50 dark:hover:text-gray-50"
-                  : "",
-              )}
-              href="#"
-            >
-              <BarChartIcon className="h-4 w-4" />
-              Analytics
-            </Link>
-            <Link
-              className={cn(
-                "flex items-center gap-3 rounded-lg px-3 py-2 transition-all",
-                pathname.includes("settings")
-                  ? "bg-gray-100 text-gray-900 hover:text-gray-900 dark:bg-gray-800 dark:text-gray-50 dark:hover:text-gray-50"
-                  : "",
-              )}
-              href="/dashboard/settings"
-            >
-              <SettingsIcon className="h-4 w-4" />
-              Paramètres
-            </Link>
+    <SidebarProvider>
+      <Sidebar variant="inset">
+        <SidebarHeader>
+          <SidebarMenu>
+            <SidebarMenuItem>
+              <SidebarMenuButton size="lg" asChild>
+                <Link href="#">
+                  <div className="bg-sidebar-primary text-sidebar-primary-foreground flex aspect-square size-8 items-center justify-center rounded-lg">
+                    <Command className="size-4" />
+                  </div>
+                  <div className="grid flex-1 text-left text-sm leading-tight">
+                    <span className="truncate font-semibold">Acme Inc</span>
+                    <span className="truncate text-xs">Enterprise</span>
+                  </div>
+                </Link>
+              </SidebarMenuButton>
+            </SidebarMenuItem>
+          </SidebarMenu>
+        </SidebarHeader>
+        <SidebarContent>
+          <SidebarGroup>
+            <SidebarGroupLabel>Platform</SidebarGroupLabel>
+            <SidebarMenu>
+              {data.navMain.map((item) => (
+                <Collapsible
+                  key={item.title}
+                  asChild
+                  defaultOpen={item.isActive}
+                >
+                  <SidebarMenuItem>
+                    <SidebarMenuButton asChild tooltip={item.title}>
+                      <Link href={`/dashboard/${item.url}`}>
+                        <item.icon />
+                        <span>{item.title}</span>
+                      </Link>
+                    </SidebarMenuButton>
+                    {item.items?.length ? (
+                      <>
+                        <CollapsibleTrigger asChild>
+                          <SidebarMenuAction className="data-[state=open]:rotate-90">
+                            <ChevronRight />
+                            <span className="sr-only">Toggle</span>
+                          </SidebarMenuAction>
+                        </CollapsibleTrigger>
+                        <CollapsibleContent>
+                          <SidebarMenuSub>
+                            {item.items.map((subItem) => (
+                              <SidebarMenuSubItem key={subItem.title}>
+                                <SidebarMenuSubButton asChild>
+                                  <Link href={`/dashboard/${subItem.url}`}>
+                                    <span>{subItem.title}</span>
+                                  </Link>
+                                </SidebarMenuSubButton>
+                              </SidebarMenuSubItem>
+                            ))}
+                          </SidebarMenuSub>
+                        </CollapsibleContent>
+                      </>
+                    ) : null}
+                  </SidebarMenuItem>
+                </Collapsible>
+              ))}
+            </SidebarMenu>
+          </SidebarGroup>
+          <SidebarGroup className="group-data-[collapsible=icon]:hidden">
+            <SidebarGroupLabel>Projects</SidebarGroupLabel>
+            <SidebarMenu>
+              {data.projects.map((item) => (
+                <SidebarMenuItem key={item.name}>
+                  <SidebarMenuButton asChild>
+                    <Link href={item.url}>
+                      <item.icon />
+                      <span>{item.name}</span>
+                    </Link>
+                  </SidebarMenuButton>
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <SidebarMenuAction showOnHover>
+                        <MoreHorizontal />
+                        <span className="sr-only">More</span>
+                      </SidebarMenuAction>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent
+                      className="w-48"
+                      side="bottom"
+                      align="end"
+                    >
+                      <DropdownMenuItem>
+                        <Folder className="text-muted-foreground" />
+                        <span>View Project</span>
+                      </DropdownMenuItem>
+                      <DropdownMenuItem>
+                        <Share className="text-muted-foreground" />
+                        <span>Share Project</span>
+                      </DropdownMenuItem>
+                      <DropdownMenuSeparator />
+                      <DropdownMenuItem>
+                        <Trash2 className="text-muted-foreground" />
+                        <span>Delete Project</span>
+                      </DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                </SidebarMenuItem>
+              ))}
+              <SidebarMenuItem>
+                <SidebarMenuButton>
+                  <MoreHorizontal />
+                  <span>More</span>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+            </SidebarMenu>
+          </SidebarGroup>
+          <SidebarGroup className="mt-auto">
+            <SidebarGroupContent>
+              <SidebarMenu>
+                {data.navSecondary.map((item) => (
+                  <SidebarMenuItem key={item.title}>
+                    <SidebarMenuButton asChild size="sm">
+                      <Link href={item.url}>
+                        <item.icon />
+                        <span>{item.title}</span>
+                      </Link>
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                ))}
+              </SidebarMenu>
+            </SidebarGroupContent>
+          </SidebarGroup>
+        </SidebarContent>
+        <SidebarFooter>
+          <SidebarMenu>
+            <SidebarMenuItem>
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <SidebarMenuButton
+                    size="lg"
+                    className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
+                  >
+                    <div className="grid flex-1 text-left text-sm leading-tight">
+                      <span className="truncate font-semibold">
+                        {data.user.name}
+                      </span>
+                      <span className="truncate text-xs">
+                        {data.user.email}
+                      </span>
+                    </div>
+                    <ChevronsUpDown className="ml-auto size-4" />
+                  </SidebarMenuButton>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent
+                  className="w-[--radix-dropdown-menu-trigger-width] min-w-56 rounded-lg"
+                  side="bottom"
+                  align="end"
+                  sideOffset={4}
+                >
+                  <DropdownMenuLabel className="p-0 font-normal">
+                    <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
+                      <div className="grid flex-1 text-left text-sm leading-tight">
+                        <span className="truncate font-semibold">
+                          {data.user.name}
+                        </span>
+                        <span className="truncate text-xs">
+                          {data.user.email}
+                        </span>
+                      </div>
+                    </div>
+                  </DropdownMenuLabel>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuGroup>
+                    <DropdownMenuItem>
+                      <Sparkles />
+                      Upgrade to Pro
+                    </DropdownMenuItem>
+                  </DropdownMenuGroup>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuGroup>
+                    <DropdownMenuItem>
+                      <BadgeCheck />
+                      Account
+                    </DropdownMenuItem>
+                    <DropdownMenuItem>
+                      <CreditCard />
+                      Billing
+                    </DropdownMenuItem>
+                    <DropdownMenuItem>
+                      <Bell />
+                      Notifications
+                    </DropdownMenuItem>
+                  </DropdownMenuGroup>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem>
+                    <LogOut />
+                    Log out
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            </SidebarMenuItem>
+          </SidebarMenu>
+        </SidebarFooter>
+      </Sidebar>
+      <SidebarInset>
+        <header className="flex h-16 shrink-0 items-center gap-2">
+          <div className="flex items-center gap-2 px-4">
+            <SidebarTrigger className="-ml-1" />
+            <Separator orientation="vertical" className="mr-2 h-4" />
+            <Breadcrumb>
+              <BreadcrumbList>
+                <BreadcrumbItem className="hidden md:block">
+                  <BreadcrumbLink href="#">
+                    Building Your Application
+                  </BreadcrumbLink>
+                </BreadcrumbItem>
+                <BreadcrumbSeparator className="hidden md:block" />
+                <BreadcrumbItem>
+                  <BreadcrumbPage>Data Fetching</BreadcrumbPage>
+                </BreadcrumbItem>
+              </BreadcrumbList>
+            </Breadcrumb>
           </div>
-        </div>
-      </div>
-    </aside>
+        </header>
+        {children}
+      </SidebarInset>
+    </SidebarProvider>
   );
 }
